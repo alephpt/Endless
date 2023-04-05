@@ -7,7 +7,6 @@ use winit::{
     window::{WindowBuilder, Window},
 };
 
-use winit::platform::web::WindowExtWebSys;
 
 #[derive(Debug)]
 pub struct Mouse {
@@ -50,6 +49,9 @@ impl Graphics {
             // Winit prevents sizing with CSS, so we have to set
             // the size manually when on web.
             use winit::dpi::PhysicalSize;
+            use winit::platform::web::WindowExtWebSys;
+
+
             window.set_inner_size(PhysicalSize::new(450, 600));
             
             web_sys::window()

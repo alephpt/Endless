@@ -1,4 +1,6 @@
 
+
+
 struct Location {
     x: f32,
     y: f32,
@@ -83,7 +85,7 @@ impl Location {
         }
     }
 
-    fn update_location(&self, bounds: &Bounds){
+    fn update_location(&mut self, bounds: &Bounds){
         if self.x < bounds.min_x {
             self.x = bounds.max_x;
         } else if self.x > bounds.max_x {

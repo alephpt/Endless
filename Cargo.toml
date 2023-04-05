@@ -1,6 +1,8 @@
 [package]
 name = "endless"
 version = "0.1.0"
+author = "Richard I Christopher"
+description = "Open world space combat game"
 edition = "2021"
 resolver = "2"
 
