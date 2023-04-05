@@ -35,8 +35,8 @@ impl ShipUI {
                 let x = match i {
                     0 => screen_width / 2.0,
                     1 => 1.0,
-                    2 => center_x + (center_x * angle_radians.cos()),
-                    3 => center_x - (center_x * angle_radians.cos()),
+                    2 => center_x - (center_x * angle_radians.cos()),
+                    3 => center_x + (center_x * angle_radians.cos()),
                     4 => screen_width - 1.0,
                     _ => 0.0,
                 };
