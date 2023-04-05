@@ -1,7 +1,7 @@
 
 
 const SCREEN_WIDTH: u32 = 100;
-const SCREEN_HEIGHT: u32 = 70;
+const SCREEN_HEIGHT: u32 = 50;
 
 #[derive(Debug)]
 pub struct ShipUI {
