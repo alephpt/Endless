@@ -1,8 +1,8 @@
 use endless::graphics::*;
 
 fn main() {
-    let mut ship_ui: ShipUI = ShipUI::new();
+    let ship_ui = ShipUI::new();
 
     println!("Ship GUI: {}", ship_ui);
-    ship_ui.plot();
+    ship_ui.plot(); 
 }

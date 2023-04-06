@@ -9,6 +9,18 @@ pub struct Vertex {
 }
 
 impl Vertex {
+    pub fn new(position: [f32; 4], color: [f32; 4]) -> Self {
+        Self { position, color }
+    }
+
+    pub fn setColor(&mut self, color: [f32; 4]) {
+        self.color = color;
+    }
+
+    pub fn updatePosition(&mut self, position: [f32; 4]) {
+        self.position = position;
+    }
+
     pub fn desc<'a>() -> wgpu::VertexBufferLayout<'a> {
         wgpu::VertexBufferLayout {
             array_stride: std::mem::size_of::<Vertex>() as wgpu::BufferAddress,
