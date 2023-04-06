@@ -1,12 +1,26 @@
-#[cfg(target_arch="wasm32")]
-use wasm_bindgen::prelude::*;
 
+use wgpu::util::DeviceExt;
 use winit::{
     event::*,
     event_loop::{ControlFlow, EventLoop},
     window::{WindowBuilder, Window},
 };
+use crate::graphics::mesh::*;
 
+const VERTICES: &[Vertex] = &[
+    Vertex {
+        position: [-0.5, -0.5, 0.0, 1.0],
+        color: [1.0, 0.0, 0.0, 1.0],
+    },
+    Vertex {
+        position: [0.5, -0.5, 0.0, 1.0],
+        color: [0.0, 1.0, 0.0, 1.0],
+    },
+    Vertex {
+        position: [0.0, 0.5, 0.0, 1.0],
+        color: [0.0, 0.0, 1.0, 1.0],
+    },
+];
 
 #[derive(Debug)]
 pub struct Mouse {
@@ -22,6 +36,8 @@ pub struct Graphics {
     pub surface: wgpu::Surface,
     pub device: wgpu::Device,
     pub render_pipeline: wgpu::RenderPipeline,
+    pub vertex_buffer: wgpu::Buffer,
+    pub num_verts: u32,
     pub queue: wgpu::Queue,
     pub config: wgpu::SurfaceConfiguration,
     pub size: winit::dpi::PhysicalSize<u32>,
@@ -32,7 +48,8 @@ impl Graphics {
     pub async fn new(window: Window) -> Self {
         const WINDOW_HEIGHT: u32 = 1200;
         const WINDOW_WIDTH: u32 = 1600;
-        
+        let num_verts: u32 = VERTICES.len() as u32;
+
         // Initialize logger
         cfg_if::cfg_if! {
             if #[cfg(target_arch = "wasm32")] {
@@ -137,13 +154,14 @@ impl Graphics {
             push_constant_ranges: &[],
         });
      
+        // create the wgpu render pipeline for our shader
         let render_pipeline = device.create_render_pipeline(&wgpu::RenderPipelineDescriptor {
             label: Some("Render Pipeline"),
             layout: Some(&render_pipeline_layout),
             vertex: wgpu::VertexState {
                 module: &shader,
                 entry_point: "vertex_main", 
-                buffers: &[], 
+                buffers: &[Vertex::desc(),], 
             },
             fragment: Some(wgpu::FragmentState { 
                 module: &shader,
@@ -175,6 +193,15 @@ impl Graphics {
             multiview: None, 
         });
 
+        // create the vertex buffer that will be used to draw our shapes
+        let vertex_buffer = device.create_buffer_init(
+            &wgpu::util::BufferInitDescriptor {
+                label: Some("Vertex Buffer"),
+                contents: bytemuck::cast_slice(&VERTICES),
+                usage: wgpu::BufferUsages::VERTEX,
+            }
+        );
+
         // configure the surface
         surface.configure(&device, &config);
         
@@ -191,6 +218,8 @@ impl Graphics {
             surface,
             device,
             render_pipeline,
+            vertex_buffer,
+            num_verts,
             queue,
             config,
             size,
@@ -296,7 +325,8 @@ impl Graphics {
             });
 
             render_pass.set_pipeline(&self.render_pipeline); 
-            render_pass.draw(0..3, 0..1);
+            render_pass.set_vertex_buffer(0, self.vertex_buffer.slice(..));
+            render_pass.draw(0..self.num_verts, 0..1);
         }
 
         self.queue.submit(std::iter::once(encoder.finish()));

@@ -43,7 +43,7 @@ impl ShipUI {
 
                 let y = match i {
                     0 => 1.0,
-                    1 | 4 => (center_y * angle_radians.sin()),
+                    1 | 4 => center_y * angle_radians.sin(),
                     _ => screen_height - 1.0,
                 };
                 (x, y, 0.0)
