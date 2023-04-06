@@ -184,34 +184,42 @@ impl ShipUI {
     pub fn calculate_line(&self, start: Vertex, end: Vertex) -> Vec<(i32, i32)> {
         let mut line: Vec<(i32, i32)> = Vec::new();
 
+        // cast start and end points to i32
         let mut start_x = start.position[0] as i32;
         let mut start_y = start.position[1] as i32;
-
         let end_x = end.position[0] as i32;
         let end_y = end.position[1] as i32;
 
+        // calculate distance between start and end points
         let dx = (end_x - start_x).abs();
         let dy = (end_y - start_y).abs();
 
+        // determine direction of line 
         let sx = if start_x < end_x { 1 } else { -1 };
         let sy = if start_y < end_y { 1 } else { -1 };
 
+        // calculate error value based on distance between points
         let mut err = dx - dy;
 
+        // loop until start point is equal to end point
         loop {
             line.push((start_x, start_y));
+
 
             if start_x == end_x && start_y == end_y {
                 break;
             }
 
+            // calculate error value for next point in line
             let e2 = 2 * err;
 
+            // if error value is greater than -dy, then move along x axis
             if e2 > -dy {
                 err -= dy;
                 start_x += sx;
             }
 
+            // if error value is less than dx, then move along y axis
             if e2 < dx {
                 err += dx;
                 start_y += sy;
@@ -222,8 +230,9 @@ impl ShipUI {
     }
     
 
-    // calculate lines and circle
+    // calculate lines and circle and return them as a single vector
     pub fn calculate_points(&self) -> Vec<(i32, i32)> {
+        // calculate lines and circle points
         let top_center_line = self.calculate_line(self.top_center_line[0], self.top_center_line[1]);
         let mid_left_line = self.calculate_line(self.mid_left_line[0], self.mid_left_line[1]);
         let bottom_left_line = self.calculate_line(self.bottom_left_line[0], self.bottom_left_line[1]);
@@ -231,6 +240,7 @@ impl ShipUI {
         let mid_right_line = self.calculate_line(self.mid_right_line[0], self.mid_right_line[1]);
         let center_circle_line = self.calculate_center_circle();
 
+        // combine all lines into one vector
         let mut all_lines: Vec<(i32, i32)> = Vec::new();
         all_lines.extend_from_slice(&top_center_line);
         all_lines.extend_from_slice(&mid_left_line);
@@ -242,7 +252,7 @@ impl ShipUI {
         all_lines
     }
 
-
+    // plot the ship UI to the screen
     pub fn plot(&self) {
         // create blank list 
         let mut screen: Vec<Vec<char>> = vec![vec![' '; SCREEN_WIDTH as usize]; SCREEN_HEIGHT as usize];
@@ -266,8 +276,6 @@ impl ShipUI {
             println!();
         }
     }
-
-
 }
 
 impl std::fmt::Display for ShipUI {
