@@ -11,6 +11,10 @@ pub struct Color{
 }
 
 impl Color {
+    pub fn new(r: f32, g: f32, b: f32, a: f32) -> Self {
+        Self { r, g, b, a }
+    }
+
     // define a series of primary colors
     pub const fn black() -> Self { Self{ r: 0.0, g: 0.0, b: 0.0, a: 1.0 } }
     pub const fn white() -> Self { Self{ r: 1.0, g: 1.0, b: 1.0, a: 1.0 } }
@@ -252,5 +256,12 @@ impl std::ops::Index<usize> for Color {
             3 => &self.a,
             _ => panic!("Index out of bounds"),
         }
+    }
+}
+
+// implement format
+impl std::fmt::Display for Color {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "Color {{ r: {}, g: {}, b: {}, a: {} }}", self.r, self.g, self.b, self.a)
     }
 }

@@ -125,3 +125,16 @@ impl From<(f32, f32, f32)> for Vertex {
         }
     }
 }
+
+
+// implement format
+impl std::fmt::Display for Vertex {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, 
+            "Vertex:
+                position: {}, 
+                color: {}, 
+                normal: {}", 
+            self.position, self.color, self.normal)
+    }
+}

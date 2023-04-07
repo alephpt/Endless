@@ -2,6 +2,8 @@
 use crate::graphics::mesh::Mesh;
 use crate::graphics::vertex::Vertex;
 use crate::graphics::color::Color;
+use crate::graphics::primitives::Line;
+use crate::graphics::primitives::Ring;
 
 const SCREEN_WIDTH: u32 = 100;
 const SCREEN_HEIGHT: u32 = 50;
@@ -124,12 +126,12 @@ impl ShipUI {
         let points = ShipUIPoints::new();
 
         // create the two end points of a line, minus the size of the center circle
-        let top_center_line = Mesh::line(points.top_center_point, points.center_point, 10.0, 20);
-        let mid_left_line = Mesh::line(points.mid_left_point, points.center_point, 10.0, 20);
-        let bottom_left_line = Mesh::line(points.bottom_left_point, points.center_point, 10.0, 20);
-        let bottom_right_line = Mesh::line(points.bottom_right_point, points.center_point, 10.0, 20);
-        let mid_right_line = Mesh::line(points.mid_right_point, points.center_point, 10.0, 20);
-        let center_circle = Mesh::ring(points.center_point.position, CIRCLE_RADIUS, 20.0, 20, Color::white());
+        let top_center_line = Line::new(points.top_center_point, points.center_point, 10.0, 20).mesh;
+        let mid_left_line = Line::new(points.mid_left_point, points.center_point, 10.0, 20).mesh;
+        let bottom_left_line = Line::new(points.bottom_left_point, points.center_point, 10.0, 20).mesh;
+        let bottom_right_line = Line::new(points.bottom_right_point, points.center_point, 10.0, 20).mesh;
+        let mid_right_line = Line::new(points.mid_right_point, points.center_point, 10.0, 20).mesh;
+        let center_circle = Ring::new(points.center_point.position, CIRCLE_RADIUS, 20.0, 20, Color::white()).mesh;
 
 
         Self {

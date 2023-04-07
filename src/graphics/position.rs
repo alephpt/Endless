@@ -224,6 +224,13 @@ impl std::ops::Mul<Normal> for Position {
     }
 }
 
+// implement formatting
+impl std::fmt::Display for Position {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "({}, {}, {}, {})", self.x, self.y, self.z, self.w)
+    }
+}
+
 
 // implement test for rotation around an origin
 #[cfg(test)]

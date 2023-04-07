@@ -167,3 +167,10 @@ impl std::ops::Sub<Position> for Normal {
         Self([self.0[0] - rhs.x, self.0[1] - rhs.y, self.0[2] - rhs.z])
     }
 }
+
+// implement format
+impl std::fmt::Display for Normal {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "({}, {}, {})", self.0[0], self.0[1], self.0[2])
+    }
+}
