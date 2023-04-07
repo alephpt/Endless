@@ -32,6 +32,22 @@ impl Position {
         (self - target) / self.distance(target)
     }
 
+    // get the magnitutde of a position
+    pub fn magnitude(self) -> f32 {
+        self.distance(self)
+    }
+
+    // noramlize a position
+    pub fn normalize(self) -> Position {
+        let magnitude = self.magnitude();
+
+        if magnitude == 0.0 {
+            return self;
+        }
+
+        self / magnitude
+    }
+
     // cross product
     pub fn cross(self, target: Position) -> Position {
         Position::new(
@@ -68,6 +84,16 @@ impl Position {
         position.z = w * (u * x + v * y + w * z) * (1.0 - c) + z * c + (-v * x + u * y) * s;
 
         position + origin
+    }
+}
+
+// implement addassign for position
+impl std::ops::AddAssign for Position {
+    fn add_assign(&mut self, rhs: Self) {
+        self.x += rhs.x;
+        self.y += rhs.y;
+        self.z += rhs.z;
+        self.w += rhs.w;
     }
 }
 

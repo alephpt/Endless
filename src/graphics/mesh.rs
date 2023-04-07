@@ -54,80 +54,62 @@ impl Mesh {
     }
 
     // calculate length, direction, normal, and create a line mesh based on a thickness and subdivision rate
-    pub fn line(start_vertex: Vertex, end_vertex: Vertex,
-                     thickness: f32, subdivision: u32) -> Self {
-        // define local variables for start and end points and colors
+    pub fn line(start_vertex: Vertex, end_vertex: Vertex, thickness: f32, subdivision: u32) -> Self {
+        // initialize variables and vectors for mesh
         let mut vertices = Vec::new();
         let mut indices = Vec::new();
-        let mut start = start_vertex.position;
-        let mut end = end_vertex.position;
-        let mut start_color = start_vertex.color;
-        let mut end_color = end_vertex.color;
-
-        // calculate length, direction, and normal
-        let distance = start.distance(end);
-
-        // define half thickness
+        let mut current_color = start_vertex.color;
+        let mut origin_point = start_vertex.position;
+        let color_incriment = (end_vertex.color - current_color) / subdivision as f32;
         let half_thickness = thickness / 2.0;
+        let direction: Position = origin_point.direction(end_vertex.position);
+        let subdivision_incriment = direction * origin_point.distance(end_vertex.position) / subdivision as f32;
 
-        // make sure the start is always top left and closer to the camera
-        if distance < 0.0 {
-            let temp = start;
-            let temp_color = start_color;
-            start = end;
-            start_color = end_color;
-            end = temp;
-            end_color = temp_color;
+        // Calculate normal
+        let up = if direction.cross(Position::new(0.0, 1.0, 0.0, 1.0)).magnitude() < f32::EPSILON {
+            Position::new(0.0, 0.0, 1.0, 1.0)
+        } else {
+            Position::new(0.0, 1.0, 0.0, 1.0)
+        };
+
+        let normal: Normal = if direction.cross(up).magnitude() > f32::EPSILON {
+            direction.cross(up).normalize().into()
+        } else {
+            [1.0, 0.0, 0.0].into()
+        };
+
+        // create the first two corners
+        let mut p1 = origin_point + normal * half_thickness;
+        let mut p2 = origin_point - normal * half_thickness;
+
+        // create the first two vertices
+        vertices.push(Vertex::new(p1, current_color, normal));
+        vertices.push(Vertex::new(p2, current_color, normal));
+
+        origin_point = (p1 + p2) / 2.0;
+
+        // create the rest of the vertices
+        for i in 0..subdivision {
+            let base = 2 * i;
+            origin_point += subdivision_incriment;
+            current_color += color_incriment;
+            p1 = origin_point + normal * half_thickness;
+            p2 = origin_point - normal * half_thickness;
+            origin_point = (p1 + p2) / 2.0;
+
+            vertices.push(Vertex::new(p1, current_color, normal));
+            vertices.push(Vertex::new(p2, current_color, normal));
+
+            indices.push(base);
+            indices.push(base + 1);
+            indices.push(base + 2);
+        
+            indices.push(base + 1);
+            indices.push(base + 3);
+            indices.push(base + 2);
         }
 
-        let direction: Position = start.direction(end);
-        let normal: Normal = start.cross(end).into();
-
-        // calculate subdivision length, direction, and color
-        let subdivision_length = distance / subdivision as f32;
-        let subdivision_direction = direction * subdivision_length;
-        let subdivision_color = end_color - start_color / subdivision as f32;
-
-        // create vertices
-        let mut current = start;
-        let mut current_color = start_color;
-
-        // find the first two corners
-        let mut c1 = start + normal * half_thickness;
-        let mut c2 = start - normal * half_thickness;
-
-        for _ in 0..subdivision {
-            // calculate the next point and color
-            let next = current + subdivision_direction;
-            let next_color = current_color + subdivision_color;
-
-            // calculate the next two corners
-            let next_c1 = next + normal * half_thickness;
-            let next_c2 = next - normal * half_thickness;
-
-            // calculate the normals
-            let normal1: Normal = Mesh::normalize(current, c1, next_c1);
-            let normal2: Normal = Mesh::normalize(current, c2, next_c2);
-
-            // add the vertices
-            vertices.push(Vertex::new(next_c1, next_color, normal1));
-            vertices.push(Vertex::new(next_c2, next_color, normal2));
-
-            // update current
-            current = next;
-            current_color = next_color;
-            c1 = next_c1;
-            c2 = next_c2;
-        }
-
-        // generate indices based on triangle strip, and connect the end to the start
-        for i in 0..subdivision * 2 {
-            indices.push(i);
-            indices.push(i + 1);
-        }         
-
-        // create mesh
-        Self{vertices, indices}
+        Self { vertices, indices }
     }
 
     // create a circular ring mesh based on a center point, radius, color, line thickness, and subdivision rate

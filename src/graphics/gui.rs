@@ -165,9 +165,13 @@ impl ShipUI {
         // calculate all the points
         let all_points = self.calculate_points();
 
+
+
         // plot all the points
         for i in all_points {
-            screen[i.1 as usize][i.0 as usize] = 'X';
+            // 
+            println!("{}, {}", i.0, i.1)
+            // screen[i.1 as usize][i.0 as usize] = 'X';
         }
 
         // plot the center point
@@ -190,6 +194,9 @@ impl std::fmt::Display for ShipUI {
         write!(
             f,
             "Ship GUI:
+            center_circle:
+                start: {}, {}
+                end: {}, {}
             top_center_line: 
                 start: {}, {}
                 end: {}, {}
@@ -205,6 +212,8 @@ impl std::fmt::Display for ShipUI {
             mid_right_line:
                 start: {}, {}
                 end: {}, {}",
+            self.center_circle.vertices[0].position.x, self.center_circle.vertices[0].position.y,
+            self.center_circle.vertices[self.center_circle.vertices.len() / 2].position.x, self.center_circle.vertices[self.center_circle.vertices.len() / 2].position.y,
             self.top_center_line.vertices[0].position.x, self.top_center_line.vertices[0].position.y,
             self.top_center_line.vertices[self.top_center_line.vertices.len() - 1].position.x, self.top_center_line.vertices[self.top_center_line.vertices.len() - 1].position.y,
             self.mid_left_line.vertices[0].position.x, self.mid_left_line.vertices[0].position.y,

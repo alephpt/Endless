@@ -76,6 +76,16 @@ impl Color {
     }
 }
 
+// impl addassign for Color
+impl std::ops::AddAssign for Color {
+    fn add_assign(&mut self, other: Self) {
+        self.r += other.r;
+        self.g += other.g;
+        self.b += other.b;
+        self.a += other.a;
+    }
+}
+
 // impl add for Color
 impl std::ops::Add for Color {
     type Output = Self;
