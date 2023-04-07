@@ -183,17 +183,38 @@ impl ShipUI {
     }
 }
 
+// implement formatting for ShipGUI
+// printing out the start and end vectors of each line
 impl std::fmt::Display for ShipUI {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(
             f,
             "Ship GUI:
-            top_center_line: {:?}
-            mid_left_line: {:?}
-            bottom_left_line: {:?}
-            bottom_right_line: {:?}
-            mid_right_line: {:?}",
-            self.top_center_line, self.mid_left_line, self.bottom_left_line, self.bottom_right_line, self.mid_right_line
+            top_center_line: 
+                start: {}, {}
+                end: {}, {}
+            mid_left_line:
+                start: {}, {}
+                end: {}, {}
+            bottom_left_line:
+                start: {}, {}
+                end: {}, {}
+            bottom_right_line:
+                start: {}, {}
+                end: {}, {}
+            mid_right_line:
+                start: {}, {}
+                end: {}, {}",
+            self.top_center_line.vertices[0].position.x, self.top_center_line.vertices[0].position.y,
+            self.top_center_line.vertices[self.top_center_line.vertices.len() - 1].position.x, self.top_center_line.vertices[self.top_center_line.vertices.len() - 1].position.y,
+            self.mid_left_line.vertices[0].position.x, self.mid_left_line.vertices[0].position.y,
+            self.mid_left_line.vertices[self.mid_left_line.vertices.len() - 1].position.x, self.mid_left_line.vertices[self.mid_left_line.vertices.len() - 1].position.y,
+            self.bottom_left_line.vertices[0].position.x, self.bottom_left_line.vertices[0].position.y,
+            self.bottom_left_line.vertices[self.bottom_left_line.vertices.len() - 1].position.x, self.bottom_left_line.vertices[self.bottom_left_line.vertices.len() - 1].position.y,
+            self.bottom_right_line.vertices[0].position.x, self.bottom_right_line.vertices[0].position.y,
+            self.bottom_right_line.vertices[self.bottom_right_line.vertices.len() - 1].position.x, self.bottom_right_line.vertices[self.bottom_right_line.vertices.len() - 1].position.y,
+            self.mid_right_line.vertices[0].position.x, self.mid_right_line.vertices[0].position.y,
+            self.mid_right_line.vertices[self.mid_right_line.vertices.len() - 1].position.x, self.mid_right_line.vertices[self.mid_right_line.vertices.len() - 1].position.y,
         )
     }
 }
