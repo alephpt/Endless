@@ -5,22 +5,27 @@ use winit::{
     event_loop::{ControlFlow, EventLoop},
     window::{WindowBuilder, Window},
 };
-use crate::graphics::mesh::*;
+use crate::graphics::vertex::Vertex;
+use crate::graphics::position::Position;
+use crate::graphics::normal::Normal;
 use crate::graphics::color::*;
 
 const VERTICES: &[Vertex] = &[
-    Vertex {
-        position: [-0.5, -0.5, 0.0, 1.0],
-        color: [1.0, 0.0, 0.0, 1.0].into(),
-    },
-    Vertex {
-        position: [0.5, -0.5, 0.0, 1.0],
-        color: [0.0, 1.0, 0.0, 1.0].into(),
-    },
-    Vertex {
-        position: [0.0, 0.5, 0.0, 1.0],
-        color: [0.0, 0.0, 1.0, 1.0].into(),
-    },
+    Vertex::new_const(
+        Position::new_const(-0.5, -0.5, 0.0, 1.0),
+        Color::red(),
+        Normal::new_const(0.0, 0.0, 1.0),
+    ),
+    Vertex::new_const(
+        Position::new_const(0.5, -0.5, 0.0, 1.0),
+        Color::green(),
+        Normal::new_const(0.0, 0.0, 1.0)
+    ),
+    Vertex::new_const(
+        Position::new_const(0.0, 0.5, 0.0, 1.0),
+        Color::blue(),
+        Normal::new_const(0.0, 0.0, 1.0)
+    ),
 ];
 
 #[derive(Debug)]
