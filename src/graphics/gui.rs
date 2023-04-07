@@ -1,5 +1,6 @@
 
-use crate::graphics::mesh::Vertex;
+use crate::graphics::mesh::{Mesh, Vertex};
+use crate::graphics::color::Color;
 
 const SCREEN_WIDTH: u32 = 100;
 const SCREEN_HEIGHT: u32 = 50;
@@ -16,6 +17,7 @@ pub struct ShipUIPoints {
     pub mid_right_point: (f32, f32, f32),
 }
 
+#[derive(Debug)]
 pub struct ShipUI {
     pub points: ShipUIPoints,
     pub center_circle: Vec<Vertex>,
@@ -26,6 +28,7 @@ pub struct ShipUI {
     pub mid_right_line: Vec<Vertex>,
 }
 
+#[derive(Debug)]
 pub struct ShipUIMesh {
     pub center_circle: Mesh,
     pub top_center_line: Mesh,
@@ -35,7 +38,7 @@ pub struct ShipUIMesh {
     pub mid_right_line: Mesh,
 }
 
-impl struct ShipUIMesh {
+impl ShipUIMesh {
     pub fn new() -> Self {
         let points = ShipUIPoints::new();
 
@@ -48,6 +51,16 @@ impl struct ShipUIMesh {
         let bottom_left_line = Mesh::line_mesh(points.bottom_left_point, points.center_point, thickness, subdivision);
         let bottom_right_line = Mesh::line_mesh(points.bottom_right_point, points.center_point, thickness, subdivision);
         let mid_right_line = Mesh::line_mesh(points.mid_right_point, points.center_point, thickness, subdivision);
+
+        Self {
+            center_circle,
+            top_center_line,
+            mid_left_line,
+            bottom_left_line,
+            bottom_right_line,
+            mid_right_line,
+        }
+    }
 }
 
 impl ShipUIPoints {
@@ -175,7 +188,7 @@ impl ShipUI {
         ];
 
         // initialize circlee to be blank vector
-        let center_circle: [Vertex; 18] = [Vertex::new([0.0, 0.0, 0.0, 1.0], [1.0, 1.0, 1.0, 1.0]); 18];
+        let center_circle: [Vertex; 30] = [Vertex::new([0.0, 0.0, 0.0, 1.0], [1.0, 1.0, 1.0, 1.0]); 30];
 
         Self {
             points,

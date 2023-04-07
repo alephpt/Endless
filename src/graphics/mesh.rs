@@ -1,129 +1,4 @@
-
-
-
-pub struct Color(pub [f32; 4]);
-
-// define a series of primary color 
-// Color::black(), Color::white(), Color::red(), Color::green(), Color::blue(), Color::yellow()
-impl Color {
-    pub fn black() -> Self {
-        Self([0.0, 0.0, 0.0, 1.0])
-    }
-
-    pub fn white() -> Self {
-        Self([1.0, 1.0, 1.0, 1.0])
-    }
-
-    pub fn red() -> Self {
-        Self([1.0, 0.0, 0.0, 1.0])
-    }
-
-    pub fn green() -> Self {
-        Self([0.0, 1.0, 0.0, 1.0])
-    }
-
-    pub fn blue() -> Self {
-        Self([0.0, 0.0, 1.0, 1.0])
-    }
-
-    pub fn yellow() -> Self {
-        Self([1.0, 1.0, 0.0, 1.0])
-    }
-
-    pub fn cyan() -> Self {
-        Self([0.0, 1.0, 1.0, 1.0])
-    }
-
-    pub fn magenta() -> Self {
-        Self([1.0, 0.0, 1.0, 1.0])
-    }
-
-    pub fn gray() -> Self {
-        Self([0.5, 0.5, 0.5, 1.0])
-    }
-
-    pub fn orange() -> Self {
-        Self([1.0, 0.5, 0.0, 1.0])
-    }
-
-    pub fn purple() -> Self {
-        Self([0.5, 0.0, 0.5, 1.0])
-    }
-
-    pub fn brown() -> Self {
-        Self([0.5, 0.25, 0.0, 1.0])
-    }
-
-    pub fn pink() -> Self {
-        Self([1.0, 0.75, 0.8, 1.0])
-    }
-
-    pub fn lime() -> Self {
-        Self([0.75, 1.0, 0.0, 1.0])
-    }
-
-    pub fn turquoise() -> Self {
-        Self([0.25, 0.88, 0.82, 1.0])
-    }
-
-    pub fn silver() -> Self {
-        Self([0.75, 0.75, 0.75, 1.0])
-    }
-
-    pub fn gold() -> Self {
-        Self([1.0, 0.84, 0.0, 1.0])
-    }
-
-    pub fn teal() -> Self {
-        Self([0.0, 0.5, 0.5, 1.0])
-    }
-
-    pub fn navy() -> Self {
-        Self([0.0, 0.0, 0.5, 1.0])
-    }
-
-    pub fn maroon() -> Self {
-        Self([0.5, 0.0, 0.0, 1.0])
-    }
-
-    pub fn olive() -> Self {
-        Self([0.5, 0.5, 0.0, 1.0])
-    }
-
-    pub fn random() -> Self {
-        Self([rand::random(), rand::random(), rand::random(), 1.0])
-    }
-
-    pub fn add(&mut self, color: [f32; 4]) {
-        self.0[0] += color[0];
-        self.0[1] += color[1];
-        self.0[2] += color[2];
-        self.0[3] += color[3];
-    }
-
-    pub fn sub(&mut self, color: [f32; 4]) {
-        self.0[0] -= color[0];
-        self.0[1] -= color[1];
-        self.0[2] -= color[2];
-        self.0[3] -= color[3];
-    }
-
-    pub fn mul(&mut self, color: [f32; 4]) {
-        self.0[0] *= color[0];
-        self.0[1] *= color[1];
-        self.0[2] *= color[2];
-        self.0[3] *= color[3];
-    }
-
-    pub fn div(&mut self, color: [f32; 4]) {
-        self.0[0] /= color[0];
-        self.0[1] /= color[1];
-        self.0[2] /= color[2];
-        self.0[3] /= color[3];
-    }
-}
-
-
+use crate::graphics::color::Color;
 
 #[repr(C)]
 #[derive(Debug, Clone, Copy, bytemuck::Pod, bytemuck::Zeroable)]
@@ -133,11 +8,11 @@ pub struct Vertex {
 }
 
 impl Vertex {
-    pub fn new(position: [f32; 4], color: [f32; 4]) -> Self {
+    pub fn new(position: [f32; 4], color: Color) -> Self {
         Self { position, color }
     }
 
-    pub fn setColor(&mut self, color: [f32; 4]) {
+    pub fn setColor(&mut self, color: Color) {
         self.color = color;
     }
 
@@ -244,7 +119,7 @@ impl Mesh {
         // make sure the start is always top left and closer to the camera
         if Mesh::direction(start, end) < 0.0 {
             let temp = start;
-            temp_color = start_color;
+            let temp_color = start_color;
             start = end;
             start_color = end_color;
             end = temp;
@@ -353,8 +228,8 @@ impl Mesh {
 
         for _ in 0..subdivision {
             // calculate the next point
-            let next = [current[0] * std::f32::cos(subdivision_angle) - current[1] * std::f32::sin(subdivision_angle),
-                        current[0] * std::f32::sin(subdivision_angle) + current[1] * std::f32::cos(subdivision_angle),
+            let next = [current[0] * subdivision_angle.cos() - current[1] * subdivision_angle.sin(),
+                        current[0] * subdivision_angle.sin() + current[1] * subdivision_angle.cos(),
                         current[2], 0.0];
 
             // calculate the next color
