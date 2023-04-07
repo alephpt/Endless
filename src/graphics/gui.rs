@@ -18,12 +18,36 @@ pub struct ShipUIPoints {
 
 pub struct ShipUI {
     pub points: ShipUIPoints,
-    pub center_circle: [Vertex; 18],
-    pub top_center_line: [Vertex; 2],
-    pub mid_left_line: [Vertex; 2],
-    pub bottom_left_line: [Vertex; 2],
-    pub bottom_right_line: [Vertex; 2],
-    pub mid_right_line: [Vertex; 2],
+    pub center_circle: Vec<Vertex>,
+    pub top_center_line: Vec<Vertex>,
+    pub mid_left_line: Vec<Vertex>,
+    pub bottom_left_line: Vec<Vertex>,
+    pub bottom_right_line: Vec<Vertex>,
+    pub mid_right_line: Vec<Vertex>,
+}
+
+pub struct ShipUIMesh {
+    pub center_circle: Mesh,
+    pub top_center_line: Mesh,
+    pub mid_left_line: Mesh,
+    pub bottom_left_line: Mesh,
+    pub bottom_right_line: Mesh,
+    pub mid_right_line: Mesh,
+}
+
+impl struct ShipUIMesh {
+    pub fn new() -> Self {
+        let points = ShipUIPoints::new();
+
+        let subdivision = SCREEN_WIDTH + SCREEN_HEIGHT / 4;
+        let thickness = 10.0;
+
+        let center_circle = Mesh::circle_mesh(points.center_point, CIRCLE_RADIUS, Color::blue(), thickness, 20);
+        let top_center_line = Mesh::line_mesh(points.top_center_point, points.center_point, thickness, subdivision);
+        let mid_left_line = Mesh::line_mesh(points.mid_left_point, points.center_point, thickness, subdivision);
+        let bottom_left_line = Mesh::line_mesh(points.bottom_left_point, points.center_point, thickness, subdivision);
+        let bottom_right_line = Mesh::line_mesh(points.bottom_right_point, points.center_point, thickness, subdivision);
+        let mid_right_line = Mesh::line_mesh(points.mid_right_point, points.center_point, thickness, subdivision);
 }
 
 impl ShipUIPoints {
@@ -72,6 +96,9 @@ impl ShipUIPoints {
             mid_right_point: points[4],
         }
     }
+
+    // to ShipUIMesh 
+
 
     // draw the ship gui in ascii 
     pub fn plot(&self) {
