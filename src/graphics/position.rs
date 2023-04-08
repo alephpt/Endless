@@ -257,6 +257,52 @@ impl std::ops::Mul<(f32, f32, f32)> for Position {
     }
 }
 
+// add normal to position
+impl std::ops::Add<Normal> for Position {
+    type Output = Self;
+
+    fn add(self, rhs: Normal) -> Self::Output {
+        Self::new(self.x + rhs[0], self.y + rhs[1], self.z + rhs[2], self.w)
+    }
+}
+
+impl std::ops::Sub<Normal> for Position {
+    type Output = Self;
+
+    fn sub(self, rhs: Normal) -> Self::Output {
+        Self::new(self.x - rhs[0], self.y - rhs[1], self.z - rhs[2], self.w)
+    }
+}
+
+impl std::ops::Div<Normal> for Position {
+    type Output = Self;
+
+    fn div(self, rhs: Normal) -> Self::Output {
+        Self::new(self.x / rhs[0], self.y / rhs[1], self.z / rhs[2], self.w)
+    }
+}
+
+impl std::ops::Mul<Normal> for Position {
+    type Output = Self;
+
+    fn mul(self, rhs: Normal) -> Self::Output {
+        Self::new(self.x * rhs[0], self.y * rhs[1], self.z * rhs[2], self.w)
+    }
+}
+
+// check if position is equal to another position
+impl PartialEq for Position {
+    fn eq(&self, other: &Self) -> bool {
+        self.x == other.x && self.y == other.y && self.z == other.z && self.w == other.w
+    }
+}
+
+// implement format
+impl std::fmt::Display for Position {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "({}, {}, {}, {})", self.x, self.y, self.z, self.w)
+    }
+}
 
 // implement test for rotation around an origin
 #[cfg(test)]

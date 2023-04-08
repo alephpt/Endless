@@ -83,6 +83,12 @@ impl From<Normal> for Position {
     }
 }
 
+// check if two normals are equal
+impl PartialEq for Normal {
+    fn eq(&self, other: &Self) -> bool {
+        self.0[0] == other.0[0] && self.0[1] == other.0[1] && self.0[2] == other.0[2]
+    }
+}
 
 // arithmetic operators
 impl std::ops::Add for Normal {

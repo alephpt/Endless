@@ -51,6 +51,43 @@ impl Mesh {
     pub fn normalize(a: Position, b: Position, c: Position) -> Normal {
         (b - a).cross(a - c).into()
     }
+
+    // deduplicate vertices
+    pub fn dedup(&mut self) {
+        let mut vertices = Vec::new();
+        let mut indices = Vec::new();
+
+        for index in &self.indices {
+            let vertex = self.vertices[*index as usize];
+
+            if let Some(i) = vertices.iter().position(|v| *v == vertex) {
+                indices.push(i as u32);
+            } else {
+                indices.push(vertices.len() as u32);
+                vertices.push(vertex);
+            }
+        }
+
+        self.vertices = vertices;
+        self.indices = indices;
+    }
+}
+
+// add two meshes together
+impl std::ops::Add for Mesh {
+    type Output = Self;
+
+    fn add(self, other: Self) -> Self {
+        let mut vertices = self.vertices;
+        let mut indices = self.indices;
+
+        let offset = vertices.len() as u32;
+
+        vertices.extend(other.vertices);
+        indices.extend(other.indices.iter().map(|i| i + offset));
+
+        Self { vertices, indices }
+    }
 }
 
 // implement format

@@ -230,6 +230,13 @@ impl std::ops::Div<f32> for Color {
     }
 }
 
+// check if two colors are equal
+impl std::cmp::PartialEq for Color {
+    fn eq(&self, other: &Self) -> bool {
+        self.r == other.r && self.g == other.g && self.b == other.b && self.a == other.a
+    }
+}
+
 // impl into [{float}; 4] for Color
 impl Into<[f32; 4]> for Color {
     fn into(self) -> [f32; 4] {

@@ -113,7 +113,14 @@ impl std::ops::Div<f32> for Vertex {
     }
 }
 
-
+// implement equals 
+impl std::cmp::PartialEq for Vertex {
+    fn eq(&self, other: &Self) -> bool {
+        self.position == other.position &&
+        self.color == other.color &&
+        self.normal == other.normal
+    }
+}
 
 // implement to vertex from (x, y, z) coordinates
 impl From<(f32, f32, f32)> for Vertex {
@@ -125,7 +132,6 @@ impl From<(f32, f32, f32)> for Vertex {
         }
     }
 }
-
 
 // implement format
 impl std::fmt::Display for Vertex {

@@ -6,27 +6,7 @@ use winit::{
     window::{WindowBuilder, Window},
 };
 use crate::graphics::vertex::Vertex;
-use crate::graphics::position::Position;
-use crate::graphics::normal::Normal;
-use crate::graphics::color::*;
-
-const VERTICES: &[Vertex] = &[
-    Vertex::new_const(
-        Position::new_const(-0.5, -0.5, 0.0, 1.0),
-        Color::red(),
-        Normal::new_const(0.0, 0.0, 1.0),
-    ),
-    Vertex::new_const(
-        Position::new_const(0.5, -0.5, 0.0, 1.0),
-        Color::green(),
-        Normal::new_const(0.0, 0.0, 1.0)
-    ),
-    Vertex::new_const(
-        Position::new_const(0.0, 0.5, 0.0, 1.0),
-        Color::blue(),
-        Normal::new_const(0.0, 0.0, 1.0)
-    ),
-];
+use crate::graphics::mesh::Mesh;
 
 #[derive(Debug)]
 pub struct Mouse {
@@ -51,10 +31,10 @@ pub struct Graphics {
 }
 
 impl Graphics {
-    pub async fn new(window: Window) -> Self {
+    pub async fn new(window: Window, mesh: &Mesh) -> Self {
         const WINDOW_HEIGHT: u32 = 1200;
         const WINDOW_WIDTH: u32 = 1600;
-        let num_verts: u32 = VERTICES.len() as u32;
+        let num_verts: u32 = mesh.vertices.len() as u32;
 
         // Initialize logger
         cfg_if::cfg_if! {
@@ -203,7 +183,7 @@ impl Graphics {
         let vertex_buffer = device.create_buffer_init(
             &wgpu::util::BufferInitDescriptor {
                 label: Some("Vertex Buffer"),
-                contents: bytemuck::cast_slice(&VERTICES),
+                contents: bytemuck::cast_slice(&mesh.vertices),
                 usage: wgpu::BufferUsages::VERTEX,
             }
         );
@@ -343,10 +323,10 @@ impl Graphics {
 }
 
 #[cfg_attr(target_arch="wasm32", wasm_bindgen(start))]
-pub async fn run() {
+pub async fn run(mesh: Mesh) -> Result<(), Box<dyn std::error::Error>> {
     let event_loop = EventLoop::new();
     let window = Graphics::new_window(&event_loop);
-    let mut graphics = Graphics::new(window).await;
+    let mut graphics = Graphics::new(window, &mesh).await;
 
     event_loop.run(move |event, _, control_flow| match event {
         Event::WindowEvent {
