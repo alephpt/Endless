@@ -4,8 +4,9 @@ use endless::graphics::Vertex;
 use endless::graphics::Color;
 use endless::graphics::Position;
 use endless::graphics::Normal;
+use endless::graphics::run;
 
-fn plot_line(line: Line, screen_width: u32, screen_height: u32) {
+fn _plot_line(line: Line, screen_width: u32, screen_height: u32) {
     let mut screen = vec![vec![' '; screen_width as usize]; screen_height as usize];
 
     for vertex in line.mesh.vertices {
@@ -24,17 +25,17 @@ fn plot_line(line: Line, screen_width: u32, screen_height: u32) {
 }
 
 pub fn main () {
-    let screen_width = 80;
-    let screen_height = 50;
+    const WINDOW_HEIGHT: u32 = 1200;
+    const WINDOW_WIDTH: u32 = 1600;
 
     let starting_vertex = Vertex::new(
-        Position::new(5.0, 5.0, 0.0, 0.0), 
+        Position::new(100.0, 100.0, 0.0, 0.0), 
         Color::blue(),
         Normal::new(1.0, 0.0, 1.0)
     );
 
     let ending_vertex = Vertex::new(
-        Position::new(screen_width as f32 - 5.0, screen_height as f32 - 5.0, 0.0, 0.0), 
+        Position::new(WINDOW_WIDTH as f32 - 100.0, WINDOW_HEIGHT as f32 - 100.0, 0.0, 0.0), 
         Color::blue(),
         Normal::new(0.0, 0.0, 1.0)
     );
@@ -42,10 +43,9 @@ pub fn main () {
     let line = Line::new(
         starting_vertex,
         ending_vertex,
-        4.0,        
+        20.0,        
         20
     );
 
-    //println!("Line: {}", line);
-    plot_line(line, screen_width, screen_height);
+    let _ = pollster::block_on(run(line.mesh));
 }
