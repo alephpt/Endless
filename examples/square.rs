@@ -22,7 +22,7 @@ fn main() {
 
         let _ = pollster::block_on(
                 run(
-                        square.subdivide(9).mesh
+                        square.subdivide(4).mesh
                 )
         );
 }
