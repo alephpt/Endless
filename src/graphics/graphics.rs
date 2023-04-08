@@ -23,7 +23,9 @@ pub struct Graphics {
     pub device: wgpu::Device,
     pub render_pipeline: wgpu::RenderPipeline,
     pub vertex_buffer: wgpu::Buffer,
-    pub num_verts: u32,
+    pub n_vertices: u32,
+    pub index_buffer: wgpu::Buffer,
+    pub n_indices: u32,
     pub queue: wgpu::Queue,
     pub config: wgpu::SurfaceConfiguration,
     pub size: winit::dpi::PhysicalSize<u32>,
@@ -34,7 +36,8 @@ impl Graphics {
     pub async fn new(window: Window, mesh: &Mesh) -> Self {
         const WINDOW_HEIGHT: u32 = 1200;
         const WINDOW_WIDTH: u32 = 1600;
-        let num_verts: u32 = mesh.vertices.len() as u32;
+        let n_vertices: u32 = mesh.vertices.len() as u32;
+        let n_indices = mesh.indices.len() as u32;
 
         // Initialize logger
         cfg_if::cfg_if! {
@@ -188,6 +191,15 @@ impl Graphics {
             }
         );
 
+        // create the index buffer that will be used to draw our shapes
+        let index_buffer = device.create_buffer_init(
+            &wgpu::util::BufferInitDescriptor {
+                label: Some("Index Buffer"),
+                contents: bytemuck::cast_slice(&mesh.indices),
+                usage: wgpu::BufferUsages::INDEX,
+            }
+        );
+
         // configure the surface
         surface.configure(&device, &config);
         
@@ -205,7 +217,9 @@ impl Graphics {
             device,
             render_pipeline,
             vertex_buffer,
-            num_verts,
+            n_vertices,
+            index_buffer,
+            n_indices,
             queue,
             config,
             size,
@@ -312,7 +326,8 @@ impl Graphics {
 
             render_pass.set_pipeline(&self.render_pipeline); 
             render_pass.set_vertex_buffer(0, self.vertex_buffer.slice(..));
-            render_pass.draw(0..self.num_verts, 0..1);
+            render_pass.set_index_buffer(self.index_buffer.slice(..), wgpu::IndexFormat::Uint16);
+            render_pass.draw_indexed(0..self.n_indices, 0, 0..1);
         }
 
         self.queue.submit(std::iter::once(encoder.finish()));

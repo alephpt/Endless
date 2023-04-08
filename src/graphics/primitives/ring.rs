@@ -29,11 +29,11 @@
         // create a circular ring mesh based on a center point, radius, color, line thickness, and subdivision rate
         pub fn ring(center: Position, radius: f32, thickness: f32, subdivision: u32, color: Color) -> Mesh {
             // create vertices, angles, color, and normal
-            let mut vertices = Vec::new();
-            let mut indices = Vec::new();
-            let angle = 2.0 * std::f32::consts::PI / subdivision as f32;
-            let axis = [0.0, 0.0, 1.0, 0.0].into();
-            let half_thickness = thickness / 2.0;
+            let mut vertices: Vec<Vertex> = Vec::new();
+            let mut indices: Vec<u16> = Vec::new();
+            let angle: f32 = 2.0 * std::f32::consts::PI / subdivision as f32;
+            let axis: Position = [0.0, 0.0, 1.0, 0.0].into();
+            let half_thickness: f32 = thickness / 2.0;
 
             // create the first two corners
             let mut p1 = Position::new(center[0] + radius + half_thickness, center[1], center[2], 1.0);
@@ -67,8 +67,8 @@
                 vertices.push(Vertex::new(next_p2, color, normal2));
 
                 // add indices in triangle strip order
-                indices.push(i * 2);
-                indices.push(i * 2 + 1);
+                indices.push((i * 2) as u16);
+                indices.push((i * 2 + 1) as u16);
                 
 
                 // update p1 and p2

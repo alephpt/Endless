@@ -5,11 +5,11 @@ use crate::graphics::normal::Normal;
 #[derive(Debug)]
 pub struct Mesh {
     pub vertices: Vec<Vertex>,
-    pub indices: Vec<u32>,
+    pub indices: Vec<u16>,
 }
 
 impl Mesh {
-    pub fn new(vertices: Vec<Vertex>, indices: Vec<u32>) -> Self {
+    pub fn new(vertices: Vec<Vertex>, indices: Vec<u16>) -> Self {
         Self { vertices, indices }
     }
 
@@ -54,16 +54,16 @@ impl Mesh {
 
     // deduplicate vertices
     pub fn dedup(&mut self) {
-        let mut vertices = Vec::new();
-        let mut indices = Vec::new();
+        let mut vertices: Vec<Vertex> = Vec::new();
+        let mut indices: Vec<u16> = Vec::new();
 
         for index in &self.indices {
             let vertex = self.vertices[*index as usize];
 
             if let Some(i) = vertices.iter().position(|v| *v == vertex) {
-                indices.push(i as u32);
+                indices.push(i as u16);
             } else {
-                indices.push(vertices.len() as u32);
+                indices.push(vertices.len() as u16);
                 vertices.push(vertex);
             }
         }
@@ -81,7 +81,7 @@ impl std::ops::Add for Mesh {
         let mut vertices = self.vertices;
         let mut indices = self.indices;
 
-        let offset = vertices.len() as u32;
+        let offset = vertices.len() as u16;
 
         vertices.extend(other.vertices);
         indices.extend(other.indices.iter().map(|i| i + offset));

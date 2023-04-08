@@ -72,7 +72,7 @@ impl Line {
 
             // add the indices
             if i < subdivision {
-                let base = 2 * i;
+                let base = (2 * i) as u16;
                 indices.push(base);
                 indices.push(base + 1);
                 indices.push(base + 2);
