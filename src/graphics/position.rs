@@ -191,43 +191,69 @@ impl std::ops::Mul<[f32; 4]> for Position {
     }
 }
 
-// implementing arithmetic of normals with positions
-impl std::ops::Add<Normal> for Position {
+// implement adding [f32; 3] with position
+impl std::ops::Add<[f32; 3]> for Position {
     type Output = Self;
 
-    fn add(self, rhs: Normal) -> Self::Output {
+    fn add(self, rhs: [f32; 3]) -> Self::Output {
         Self::new(self.x + rhs[0], self.y + rhs[1], self.z + rhs[2], self.w)
     }
 }
 
-impl std::ops::Sub<Normal> for Position {
+impl std::ops::Sub<[f32; 3]> for Position {
     type Output = Self;
 
-    fn sub(self, rhs: Normal) -> Self::Output {
+    fn sub(self, rhs: [f32; 3]) -> Self::Output {
         Self::new(self.x - rhs[0], self.y - rhs[1], self.z - rhs[2], self.w)
     }
 }
 
-impl std::ops::Div<Normal> for Position {
+impl std::ops::Div<[f32; 3]> for Position {
     type Output = Self;
 
-    fn div(self, rhs: Normal) -> Self::Output {
+    fn div(self, rhs: [f32; 3]) -> Self::Output {
         Self::new(self.x / rhs[0], self.y / rhs[1], self.z / rhs[2], self.w)
     }
 }
 
-impl std::ops::Mul<Normal> for Position {
+impl std::ops::Mul<[f32; 3]> for Position {
     type Output = Self;
 
-    fn mul(self, rhs: Normal) -> Self::Output {
+    fn mul(self, rhs: [f32; 3]) -> Self::Output {
         Self::new(self.x * rhs[0], self.y * rhs[1], self.z * rhs[2], self.w)
     }
 }
 
-// implement formatting
-impl std::fmt::Display for Position {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "({}, {}, {}, {})", self.x, self.y, self.z, self.w)
+// implement adding (x, y, z) with position
+impl std::ops::Add<(f32, f32, f32)> for Position {
+    type Output = Self;
+
+    fn add(self, rhs: (f32, f32, f32)) -> Self::Output {
+        Self::new(self.x + rhs.0, self.y + rhs.1, self.z + rhs.2, self.w)
+    }
+}
+
+impl std::ops::Sub<(f32, f32, f32)> for Position {
+    type Output = Self;
+
+    fn sub(self, rhs: (f32, f32, f32)) -> Self::Output {
+        Self::new(self.x - rhs.0, self.y - rhs.1, self.z - rhs.2, self.w)
+    }
+}
+
+impl std::ops::Div<(f32, f32, f32)> for Position {
+    type Output = Self;
+
+    fn div(self, rhs: (f32, f32, f32)) -> Self::Output {
+        Self::new(self.x / rhs.0, self.y / rhs.1, self.z / rhs.2, self.w)
+    }
+}
+
+impl std::ops::Mul<(f32, f32, f32)> for Position {
+    type Output = Self;
+
+    fn mul(self, rhs: (f32, f32, f32)) -> Self::Output {
+        Self::new(self.x * rhs.0, self.y * rhs.1, self.z * rhs.2, self.w)
     }
 }
 
