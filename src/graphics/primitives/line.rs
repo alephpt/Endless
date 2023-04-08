@@ -31,7 +31,7 @@ impl Line {
 
     // calculate length, direction, normal, and create a line mesh based on a thickness and subdivision rate
     pub fn line(start_vertex: Vertex, end_vertex: Vertex, thickness: f32, subdivision: u32) -> Mesh {
-  
+        Mesh { vertices: vec![start_vertex, end_vertex], indices: vec![0, 1] }  
     }
 }
 
