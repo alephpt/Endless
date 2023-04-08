@@ -56,10 +56,11 @@ impl Mesh {
 // implement format
 impl std::fmt::Display for Mesh {
     fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-        // print each vertex on a new line
-        for vertex in &self.vertices {
-            writeln!(f, "{}", vertex)?;
+        // print each vertex with its index on a new line
+        for (i, vertex) in self.vertices.iter().enumerate() {
+            writeln!(f, "\t[{}]{}", i, vertex)?;
         }
+
 
         // print each index on a new line in groups of 3's
         for (i, index) in self.indices.iter().enumerate() {
@@ -67,7 +68,7 @@ impl std::fmt::Display for Mesh {
                 writeln!(f, "")?;
             }
 
-            write!(f, "{} ", index)?;
+            write!(f, "\t{} ", index)?;
 
         }
         Ok(())

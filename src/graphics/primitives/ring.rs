@@ -1,7 +1,7 @@
-    use crate::graphics::vertex::Vertex;
-    use crate::graphics::position::Position;
-    use crate::graphics::color::{Color, self};
-    use crate::graphics::mesh::Mesh;
+    use crate::graphics::Vertex;
+    use crate::graphics::Position;
+    use crate::graphics::Color;
+    use crate::graphics::Mesh;
 
     pub struct Ring {
         pub center: Position,

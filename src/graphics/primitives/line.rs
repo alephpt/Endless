@@ -36,53 +36,51 @@ impl Line {
         let mut indices = Vec::new();
         let mut current_color = start_vertex.color;
         let mut origin_point = start_vertex.position;
-        let color_incriment = (end_vertex.color - current_color) / subdivision as f32;
+        let color_increment = (end_vertex.color - current_color) / subdivision as f32;
         let half_thickness = thickness / 2.0;
-        let direction: Position = origin_point.direction(end_vertex.position);
-        let subdivision_incriment = direction * origin_point.distance(end_vertex.position) / subdivision as f32;
+        let direction: Position = end_vertex.position.direction(origin_point);
+        let subdivision_increment = direction * origin_point.distance(end_vertex.position) / subdivision as f32;
 
         // Calculate normal
-        let up = if direction.cross(Position::new(0.0, 1.0, 0.0, 1.0)).magnitude() < f32::EPSILON {
-            Position::new(0.0, 0.0, 1.0, 1.0)
-        } else {
+        let up = if direction.cross(Position::new(0.0, 0.0, 1.0, 1.0)).magnitude() < f32::EPSILON {
             Position::new(0.0, 1.0, 0.0, 1.0)
+        } else {
+            Position::new(1.0, 0.0, 0.0, 1.0)
         };
 
         let normal: Normal = if direction.cross(up).magnitude() > f32::EPSILON {
             direction.cross(up).normalize().into()
         } else {
-            [1.0, 0.0, 0.0].into()
+            [1.0, -1.0, 0.0].into()
         };
 
         // create the first two corners
         let mut p1 = origin_point + normal * half_thickness;
         let mut p2 = origin_point - normal * half_thickness;
 
-        // create the first two vertices
-        vertices.push(Vertex::new(p1, current_color, normal));
-        vertices.push(Vertex::new(p2, current_color, normal));
-
-        origin_point = (p1 + p2) / 2.0;
-
-        // create the rest of the vertices
-        for i in 0..subdivision {
-            let base = 2 * i;
-            origin_point += subdivision_incriment;
-            current_color += color_incriment;
-            p1 = origin_point + normal * half_thickness;
-            p2 = origin_point - normal * half_thickness;
-            origin_point = (p1 + p2) / 2.0;
-
+        // Create vertices and indices
+        for i in 0..=subdivision {
+            // add the two corners
             vertices.push(Vertex::new(p1, current_color, normal));
             vertices.push(Vertex::new(p2, current_color, normal));
 
-            indices.push(base);
-            indices.push(base + 1);
-            indices.push(base + 2);
-        
-            indices.push(base + 1);
-            indices.push(base + 3);
-            indices.push(base + 2);
+            // increment the origin point and color
+            origin_point += subdivision_increment;
+            current_color += color_increment;
+            p1 = origin_point + normal * half_thickness;
+            p2 = origin_point - normal * half_thickness;
+
+            // add the indices
+            if i < subdivision {
+                let base = 2 * i;
+                indices.push(base);
+                indices.push(base + 1);
+                indices.push(base + 2);
+
+                indices.push(base + 1);
+                indices.push(base + 3);
+                indices.push(base + 2);
+            }
         }
 
         Mesh { vertices, indices }
@@ -100,7 +98,7 @@ impl std::fmt::Display for Line {
                     end_color: {}, 
                     thickness: {}, 
                     subdivision: {}, 
-                    mesh: {}
+                    mesh: \n{}
                 ", 
         self.start_position, self.end_position, self.start_color, self.end_color, self.thickness, self.subdivision, self.mesh)
     }

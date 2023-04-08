@@ -28,13 +28,13 @@ pub fn main () {
     let screen_height = 50;
 
     let starting_vertex = Vertex::new(
-        Position::new(0.0, 0.0, 0.0, 0.0), 
+        Position::new(5.0, 5.0, 0.0, 0.0), 
         Color::blue(),
-        Normal::new(0.0, 0.0, 1.0)
+        Normal::new(1.0, 0.0, 1.0)
     );
 
     let ending_vertex = Vertex::new(
-        Position::new(screen_width as f32, screen_height as f32, 0.0, 0.0), 
+        Position::new(screen_width as f32 - 5.0, screen_height as f32 - 5.0, 0.0, 0.0), 
         Color::blue(),
         Normal::new(0.0, 0.0, 1.0)
     );
@@ -42,10 +42,10 @@ pub fn main () {
     let line = Line::new(
         starting_vertex,
         ending_vertex,
-        1.0,        
-        10
+        4.0,        
+        20
     );
 
-    println!("Line: {}", line);
+    //println!("Line: {}", line);
     plot_line(line, screen_width, screen_height);
 }

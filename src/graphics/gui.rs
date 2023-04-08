@@ -1,9 +1,9 @@
 
-use crate::graphics::mesh::Mesh;
-use crate::graphics::vertex::Vertex;
-use crate::graphics::color::Color;
-use crate::graphics::primitives::Line;
-use crate::graphics::primitives::Ring;
+use crate::graphics::Mesh;
+use crate::graphics::Vertex;
+use crate::graphics::Color;
+use crate::graphics::Line;
+use crate::graphics::Ring;
 
 const SCREEN_WIDTH: u32 = 100;
 const SCREEN_HEIGHT: u32 = 50;
@@ -54,17 +54,18 @@ impl ShipUIPoints {
 
                 let x = match i {
                     0 => screen_width / 2.0,
-                    1 => 1.0,
-                    2 => center_x - (center_x * angle_radians.cos()),
-                    3 => center_x + (center_x * angle_radians.cos()),
-                    4 => screen_width - 1.0,
+                    1 => 5.0,
+                    2 => center_x - (center_x * angle_radians.cos()) - CIRCLE_RADIUS / 1.3,
+                    3 => center_x + (center_x * angle_radians.cos()) + CIRCLE_RADIUS / 1.3,
+                    4 => screen_width - 5.0,
                     _ => 0.0,
                 };
 
                 let y = match i {
-                    0 => 1.0,
-                    1 | 4 => center_y * angle_radians.sin(),
-                    _ => screen_height - 1.0,
+                    0 => 5.0,
+                    1 | 4 => center_y * angle_radians.sin() - CIRCLE_RADIUS / 1.3,
+                    2 | 3 => center_y * angle_radians.sin() + CIRCLE_RADIUS / 1.3,
+                    _ => screen_height - 5.0,
                 };
                 Vertex::new([x, y, 0.0, 0.0].into(), Color::teal(), [0.0, 0.0, 1.0].into())
             }) 
@@ -126,13 +127,12 @@ impl ShipUI {
         let points = ShipUIPoints::new();
 
         // create the two end points of a line, minus the size of the center circle
-        let top_center_line = Line::new(points.top_center_point, points.center_point, 10.0, 20).mesh;
-        let mid_left_line = Line::new(points.mid_left_point, points.center_point, 10.0, 20).mesh;
-        let bottom_left_line = Line::new(points.bottom_left_point, points.center_point, 10.0, 20).mesh;
-        let bottom_right_line = Line::new(points.bottom_right_point, points.center_point, 10.0, 20).mesh;
-        let mid_right_line = Line::new(points.mid_right_point, points.center_point, 10.0, 20).mesh;
-        let center_circle = Ring::new(points.center_point.position, CIRCLE_RADIUS, 20.0, 20, Color::white()).mesh;
-
+        let top_center_line = Line::new(points.top_center_point, points.center_point, 2.0, 5).mesh;
+        let mid_left_line = Line::new(points.mid_left_point, points.center_point, 2.0, 5).mesh;
+        let bottom_left_line = Line::new(points.bottom_left_point, points.center_point, 2.0, 5).mesh;
+        let bottom_right_line = Line::new(points.bottom_right_point, points.center_point, 2.0, 5).mesh;
+        let mid_right_line = Line::new(points.mid_right_point, points.center_point, 2.0, 5).mesh;
+        let center_circle = Ring::new(points.center_point.position, CIRCLE_RADIUS, 2.0, 15, Color::white()).mesh;
 
         Self {
             center_circle,
@@ -149,6 +149,7 @@ impl ShipUI {
     pub fn calculate_points(&self) -> Vec<(i32, i32)> {
         // combine all lines into one vector
         let mut all_lines: Vec<(i32, i32)> = Vec::new();
+
         all_lines.extend(self.top_center_line.vertices.iter().map(|i| (i.position.x as i32, i.position.y as i32)));
         all_lines.extend(self.mid_left_line.vertices.iter().map(|i| (i.position.x as i32, i.position.y as i32)));
         all_lines.extend(self.bottom_left_line.vertices.iter().map(|i| (i.position.x as i32, i.position.y as i32)));
@@ -167,17 +168,13 @@ impl ShipUI {
         // calculate all the points
         let all_points = self.calculate_points();
 
-
-
-        // plot all the points
-        for i in all_points {
-            // 
-            println!("{}, {}", i.0, i.1)
-            // screen[i.1 as usize][i.0 as usize] = 'X';
-        }
-
         // plot the center point
         screen[SCREEN_HEIGHT as usize / 2][SCREEN_WIDTH as usize / 2] = 'X';
+
+        // plot all the points
+        for point in all_points {
+            screen[point.0 as usize][point.1 as usize] = 'X';
+        }
 
         // print the screen
         for i in screen {
