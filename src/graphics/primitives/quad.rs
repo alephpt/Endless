@@ -20,15 +20,41 @@ impl Square {
         Mesh::new(vec![v1, v2, v3, v4], vec![0, 1, 2, 1, 3, 2])
     }
 
+    pub fn dedup(&self) -> Self {
+        let mut vertices = vec![];
+        let mut indices = vec![];
+
+        for index in self.mesh.indices.iter() {
+            let vertex = self.mesh.vertices[*index as usize];
+            let mut found = false;
+            for (i, v) in vertices.iter().enumerate() {
+                if v == &vertex {
+                    indices.push(i as u16);
+                    found = true;
+                    break;
+                }
+            }
+            if !found {
+                indices.push(vertices.len() as u16);
+                vertices.push(vertex);
+            }
+        }
+
+        Self {
+            fill: self.fill,
+            mesh: Mesh::new(vertices, indices),
+        }
+    }
+
     // subdivide a square based on a subdivision rate
     pub fn subdivide(&self, n_subdivisions: u32) -> Self {
         let mut vertices = vec![];
         let mut indices = vec![];
 
-        let mut v1 = self.mesh.vertices[0];
-        let mut v2 = self.mesh.vertices[1];
-        let mut v3 = self.mesh.vertices[2];
-        let mut v4 = self.mesh.vertices[3];
+        let v1 = self.mesh.vertices[0];
+        let v2 = self.mesh.vertices[1];
+        let v3 = self.mesh.vertices[2];
+        let v4 = self.mesh.vertices[3];
         let n = 1 << n_subdivisions;
         let step = 1.0 / n as f32;
     
@@ -75,6 +101,6 @@ impl Square {
         Self {
             fill: self.fill,
             mesh: Mesh::new(vertices, indices),
-        }
+        }.dedup()
     }
 }
