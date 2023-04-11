@@ -304,7 +304,7 @@ impl Graphics {
             if dx.is_nan() || dy.is_nan() {
                 return;
             }
-            
+
             // find the normalized direction of the mouse movement
             let magnitude = (dx * dx + dy * dy).sqrt();
             let x = dx / magnitude as f32;
@@ -424,6 +424,7 @@ pub async fn run(cube: Cube) -> Result<(), Box<dyn std::error::Error>> {
                 Err(wgpu::SurfaceError::OutOfMemory) => *control_flow = ControlFlow::Exit,
                 Err(e) => eprintln!("{:?}", e),
             }
+            
         },
         Event::MainEventsCleared => {
             graphics.window.request_redraw();

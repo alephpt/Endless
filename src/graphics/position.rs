@@ -95,7 +95,7 @@ impl Position {
         position.y = v * (u * x + v * y + w * z) * (1.0 - c) + y * c + (w * x - u * z) * s;
         position.z = w * (u * x + v * y + w * z) * (1.0 - c) + z * c + (-v * x + u * y) * s;
 
-        println!("Rotated position: {:?}", position);
+        //println!("Rotated position: {:?}", position);
         position + origin
     }
 }
