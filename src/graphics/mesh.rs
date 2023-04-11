@@ -63,7 +63,7 @@ impl Mesh {
     // rotate mesh around an axis
     pub fn rotate(&mut self, axis: Position, origin: Position, angle: f32) {
         for vertex in &mut self.vertices {
-            vertex.position.rotate(angle, origin,  axis);
+            vertex.position = vertex.position.rotate(angle, origin,  axis);
         }
     }
 

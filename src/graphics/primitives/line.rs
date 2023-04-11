@@ -2,7 +2,6 @@
 use crate::graphics::vertex::Vertex;
 use crate::graphics::position::Position;
 use crate::graphics::color::Color;
-use crate::graphics::normal::Normal;
 use crate::graphics::mesh::Mesh;
 
 pub struct Line {

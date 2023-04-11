@@ -6,7 +6,6 @@ use winit::{
     window::{WindowBuilder, Window},
 };
 use crate::graphics::Vertex;
-use crate::graphics::Mesh;
 use crate::graphics::Position;
 use crate::graphics::Cube;
 
@@ -292,16 +291,17 @@ impl Graphics {
     }
 
     pub fn update(&mut self) {
+        let current_mouse_pos = self.mouse_state.mouse_position;
+
         // if the mouse button is pushed down
         if self.mouse_state.l_mouse_down {
-            let current_mouse_pos = self.mouse_state.mouse_position;
 
             // calculate dx and dy
             let dx = (current_mouse_pos.x - self.mouse_state.prev_mouse_position.x) as f32;
             let dy = (current_mouse_pos.y - self.mouse_state.prev_mouse_position.y) as f32;
 
-            // check that dx and dy are numbers
-            if dx.is_nan() || dy.is_nan() {
+            // check if dx and dy are 0
+            if dx == 0.0 && dy == 0.0 {
                 return;
             }
 
@@ -309,6 +309,11 @@ impl Graphics {
             let magnitude = (dx * dx + dy * dy).sqrt();
             let x = dx / magnitude as f32;
             let y = dy / magnitude as f32;
+
+            // check that dx and dy are numbers
+            if x.is_nan() || y.is_nan() {
+                return;
+            }
 
             // create xyz axis
             let axis = Position::new(x, y, 0.0, 1.0);
@@ -322,15 +327,12 @@ impl Graphics {
                 axis
             );
 
-  //          println!("dx: {}, dy: {}, magnitude: {}, x: {}, y: {}, angle: {}", dx, dy, magnitude, x, y, angle);
-            // update the previous mouse position
-            self.mouse_state.prev_mouse_position = current_mouse_pos;
+            println!("dx: {}, dy: {}, magnitude: {}, x: {}, y: {}, angle: {}", dx, dy, magnitude, x, y, angle);
+            println!("Cube verts: {:?}", self.cube.mesh.vertices);
         }
-        // if the mouse button is not pushed down
-        else {
-            // update the previous mouse position
-            self.mouse_state.prev_mouse_position = self.mouse_state.mouse_position;
-        }
+
+        // update the previous mouse position
+        self.mouse_state.prev_mouse_position = current_mouse_pos;
     }
 
     pub fn resize(&mut self, new_size: winit::dpi::PhysicalSize<u32>) {

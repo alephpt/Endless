@@ -67,35 +67,45 @@ impl Position {
         self.x * target.x + self.y * target.y + self.z * target.z + self.w * target.w
     }
 
-    // square root of a position
-
-
     // find the next position in a given direction
     pub fn find_next(self, direction: Position, distance: f32) -> Position {
         self + direction * distance
     }
 
     // rotate a position around the origin across an axis
-    pub fn rotate(self, angle: f32, origin: Position, axis: Position) -> Position {
-        let mut position = self - origin;
+    pub fn rotate(&self, angle: f32, origin: Position, axis: Position) -> Position {
+        // trnaslate the position to the origin
+        let mut position = *self - origin;
 
-        // convert angle to radians
-        let (s, c) = angle.sin_cos();
+        // normalize the axis
+        let axis = axis.normalize();
 
-        let x = position.x;
-        let y = position.y;
-        let z = position.z;
+        // create rotation matrix
+        let rotation_matrix = [
+            [
+                axis.x * axis.x * (1.0 - angle.cos()) + angle.cos(),
+                axis.x * axis.y * (1.0 - angle.cos()) - axis.z * angle.sin(),
+                axis.x * axis.z * (1.0 - angle.cos()) + axis.y * angle.sin(),
+                0.0,
+            ],
+            [
+                axis.y * axis.x * (1.0 - angle.cos()) + axis.z * angle.sin(),
+                axis.y * axis.y * (1.0 - angle.cos()) + angle.cos(),
+                axis.y * axis.z * (1.0 - angle.cos()) - axis.x * angle.sin(),
+                0.0,
+            ],
+            [
+                axis.z * axis.x * (1.0 - angle.cos()) - axis.y * angle.sin(),
+                axis.z * axis.y * (1.0 - angle.cos()) + axis.x * angle.sin(),
+                axis.z * axis.z * (1.0 - angle.cos()) + angle.cos(),
+                0.0,
+            ],
+            [0.0, 0.0, 0.0, 1.0],
+        ];
 
-        let u = axis.x;
-        let v = axis.y;
-        let w = axis.z;
+        // apply rotation matrix to position and translate back
+        let position = position * rotation_matrix;
 
-        // define rotated position around axis
-        position.x = u * (u * x + v * y + w * z) * (1.0 - c) + x * c + (-w * y + v * z) * s;
-        position.y = v * (u * x + v * y + w * z) * (1.0 - c) + y * c + (w * x - u * z) * s;
-        position.z = w * (u * x + v * y + w * z) * (1.0 - c) + z * c + (-v * x + u * y) * s;
-
-        //println!("Rotated position: {:?}", position);
         position + origin
     }
 }
@@ -168,6 +178,20 @@ impl std::ops::Mul<f32> for Position {
 
     fn mul(self, rhs: f32) -> Self::Output {
         Self::new(self.x * rhs, self.y * rhs, self.z * rhs, self.w * rhs)
+    }
+}
+
+// implement mult of rotation matrix 
+impl std::ops::Mul<[[f32; 4]; 4]> for Position {
+    type Output = Self;
+
+    fn mul(self, rhs: [[f32; 4]; 4]) -> Self::Output {
+        Self::new(
+            self.x * rhs[0][0] + self.y * rhs[1][0] + self.z * rhs[2][0] + self.w * rhs[3][0],
+            self.x * rhs[0][1] + self.y * rhs[1][1] + self.z * rhs[2][1] + self.w * rhs[3][1],
+            self.x * rhs[0][2] + self.y * rhs[1][2] + self.z * rhs[2][2] + self.w * rhs[3][2],
+            self.x * rhs[0][3] + self.y * rhs[1][3] + self.z * rhs[2][3] + self.w * rhs[3][3],
+        )
     }
 }
 
