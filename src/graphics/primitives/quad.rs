@@ -53,6 +53,16 @@ impl Square {
         Mesh::new(vec![v1, v2, v3, v4], vec![0, 1, 2, 1, 3, 2])
     }
 
+    // create square from vertices
+    pub fn from_vertices(vertices: Vec<Vertex>) -> Self {
+        let mesh = Mesh::new(vertices, vec![0, 1, 2, 1, 3, 2]);
+
+        Self {
+            fill: true,
+            mesh,
+        }
+    }
+
     pub fn dedup(&mut self) {
         self.mesh.dedup();
     }

@@ -1,9 +1,10 @@
 
-use crate::graphics::mesh::Mesh;
-use crate::graphics::vertex::Vertex;
-use crate::graphics::position::Position;
-use crate::graphics::color::Color;
-use crate::graphics::normal::Normal;
+use crate::graphics::Mesh;
+use crate::graphics::Vertex;
+use crate::graphics::Position;
+use crate::graphics::Color;
+use crate::graphics::Normal;
+use crate::graphics::Square;
 
 #[derive(Debug)]
 pub struct Cube {
@@ -61,36 +62,40 @@ impl Cube {
             Normal::new(0.0, 0.0, 1.0));
 
         // back face
-        // back left top
-        let blt = Vertex::new(
+        
+        // back right bottom
+        let brb = Vertex::new(
             Position::new(x + offset, y + offset, z - offset, 1.0), 
-            Color::green(), 
+            Color::red(), 
             Normal::new(0.0, 0.0, 1.0));
         // back right top
         let brt = Vertex::new(
             Position::new(x + offset, y - offset, z - offset, 1.0), 
             Color::blue(), 
             Normal::new(0.0, 0.0, 1.0));
-        // back right bottom
-        let brb = Vertex::new(
-            Position::new(x - offset, y + offset, z - offset, 1.0), 
-            Color::red(), 
-            Normal::new(0.0, 0.0, 1.0));
         // back left bottom
         let blb = Vertex::new(
-            Position::new(x - offset, y - offset, z - offset, 1.0), 
+            Position::new(x - offset, y + offset, z - offset, 1.0), 
             Color::white(), 
             Normal::new(0.0, 0.0, 1.0));
+        // back left top
+        let blt = Vertex::new(
+            Position::new(x - offset, y - offset, z - offset, 1.0), 
+            Color::green(), 
+            Normal::new(0.0, 0.0, 1.0));
+
+
+
 
         // add vertices and indices
         vertices.push(frt);             // black - 0
         vertices.push(flt);             // cyan - 1
         vertices.push(flb);             // yellow - 2
         vertices.push(frb);             // magenta - 3
-        vertices.push(blt);             // green - 4
+        vertices.push(brb);             // red - 4
         vertices.push(brt);             // blue - 5
-        vertices.push(brb);             // red - 6
-        vertices.push(blb);             // white - 7 
+        vertices.push(blb);             // white - 6 
+        vertices.push(blt);             // green - 7
 
         // wind the indices in clockwise
         // front face         // 012  132
@@ -174,78 +179,41 @@ impl Cube {
         let mut indices: Vec<u16> = vec![];
 
         // get all 8 corners of the cube
-        let frt = self.mesh.vertices[0];
+        let flb = self.mesh.vertices[0];
         let flt = self.mesh.vertices[1];
-        let flb = self.mesh.vertices[2];
-        let frb = self.mesh.vertices[3];
-        let blt = self.mesh.vertices[4];
+        let frb = self.mesh.vertices[2];
+        let frt = self.mesh.vertices[3];
+        let brb = self.mesh.vertices[4];
         let brt = self.mesh.vertices[5];
-        let brb = self.mesh.vertices[6];
-        let blb = self.mesh.vertices[7];
+        let blb = self.mesh.vertices[6];
+        let blt = self.mesh.vertices[7];
         
-        // calculate step size
-        let n = 1 << n_subdivisions;
-        let step = 1.0 / n as f32;
+        // create a square for each side
+        let mut squares: Vec<Square> = vec![];
+        squares.push(Square::from_vertices(vec![flb, flt, frb, frt]));
+        squares.push(Square::from_vertices(vec![brb, brt, blb, blt]));
+        squares.push(Square::from_vertices(vec![blb, blt, flb, flt]));
+        squares.push(Square::from_vertices(vec![frb, frt, brb, brt]));
+        squares.push(Square::from_vertices(vec![flt, blt, frt, brt]));
+        squares.push(Square::from_vertices(vec![blb, flb, brb, frb]));
 
-    // create a new cube based with new tris based on the subdivision size for each face
-    for face_index in 0..6 {
-        let offset = face_index * n;
+        // subdivide each square
+        for square in &mut squares {
+            square.subdivide(n_subdivisions);
+        }
 
-        let winding_order = match face_index {
-            0 | 2 => [0, 1, 2, 1, 3, 2],
-            1 | 3 => [0, 2, 1, 1, 2, 3],
-            4 => [0, 1, 3, 1, 2, 3],
-            5 => [0, 3, 1, 1, 3, 2],
-            _ => unreachable!(),
-        };
-
-        let (a, b, c, d) = match face_index {
-            0 => (frt, flt, flb, frb), // front
-            1 => (blt, brt, brb, blb), // back
-            2 => (flt, blt, blb, flb), // left
-            3 => (brt, frt, frb, brb), // right
-            4 => (blt, flt, frt, brt), // top
-            5 => (frb, brb, blb, flb), // bottom
-            _ => unreachable!(),
-        };
-
-        // create the vertices
-        for i in 0..=n {
-            let t1 = i as f32 * step;
-            for j in 0..=n {
-                let t2 = j as f32 * step;
-    
-                let ab = a.interpolate(b, t2);
-                let cd = c.interpolate(d, t2);
-                let vert = ab.interpolate(cd, t1);
-    
-                // add the vertex to the list
-                vertices.push(vert);
+        // add vertices and indices to the cube
+        for square in squares {
+            for index in square.mesh.indices {
+                indices.push(vertices.len() as u16 + index);
+            }
+            for vertex in square.mesh.vertices {
+                vertices.push(vertex);
             }
         }
 
-        // create the indices
-        for i in 0..n {
-            for j in 0..n {
-                let index = i * (n + 1) + j;
-
-                // triangle 1
-                indices.push((index + n + 1) as u16);
-                indices.push(index as u16);
-                indices.push((index + (n + 1) + 1) as u16);
-
-                // triangle 2
-                indices.push(index as u16);
-                indices.push((index + 1) as u16);
-                indices.push((index + (n + 1) + 1) as u16);
-            }
-        }
-
-    }
-    
-    // set the new vertices and indices
-    self.mesh.vertices = vertices;
-    self.mesh.indices = indices;
+        // update mesh
+        self.mesh = Mesh::new(vertices, indices);
     }
 }
 
