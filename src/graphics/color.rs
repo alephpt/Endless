@@ -78,6 +78,11 @@ impl Color {
         self.a = 1.0;
         *self
     }
+
+    // interpolate
+    pub fn interpolate(self, other: Self, t: f32) -> Color {
+        self * (1.0 - t) + other * t
+    }
 }
 
 // impl addassign for Color

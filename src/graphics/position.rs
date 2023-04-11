@@ -108,6 +108,11 @@ impl Position {
 
         position + origin
     }
+
+    // interpolate
+    pub fn interpolate(self, target: Position, amount: f32) -> Position {
+        self * (1.0 - amount) + target * amount
+    }
 }
 
 // implement addassign for position

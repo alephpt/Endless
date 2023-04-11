@@ -307,8 +307,8 @@ impl Graphics {
 
             // find the normalized direction of the mouse movement
             let magnitude = (dx * dx + dy * dy).sqrt();
-            let x = dx / magnitude as f32;
-            let y = dy / magnitude as f32;
+            let x = dy / magnitude as f32;
+            let y = dx / magnitude as f32;
 
             // check that dx and dy are numbers
             if x.is_nan() || y.is_nan() {
@@ -319,7 +319,7 @@ impl Graphics {
             let axis = Position::new(x, y, 0.0, 1.0);
 
             // convert x and y displacement to an angle in degrees
-            let angle = (magnitude / 100.0) * 360.0;
+            let angle = (magnitude / 100.0) * 360.0  * 0.01;
 
             // rotate the mesh based on the mouse position against the previous mouse position
             self.cube.rotate(
@@ -327,8 +327,17 @@ impl Graphics {
                 axis
             );
 
-            println!("dx: {}, dy: {}, magnitude: {}, x: {}, y: {}, angle: {}", dx, dy, magnitude, x, y, angle);
-            println!("Cube verts: {:?}", self.cube.mesh.vertices);
+            // println!("dx: {}, dy: {}, magnitude: {}, x: {}, y: {}, angle: {}", dx, dy, magnitude, x, y, angle);
+            // println!("Cube verts: {:?}", self.cube.mesh.vertices);
+
+            // recreate the vertex buffer
+            self.vertex_buffer = self.device.create_buffer_init(
+                &wgpu::util::BufferInitDescriptor {
+                    label: Some("Vertex Buffer"),
+                    contents: bytemuck::cast_slice(&self.cube.mesh.vertices),
+                    usage: wgpu::BufferUsages::VERTEX,
+                }
+            );
         }
 
         // update the previous mouse position

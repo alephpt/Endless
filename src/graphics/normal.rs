@@ -25,6 +25,11 @@ impl Normal {
             self.0[0] * target.0[1] - self.0[1] * target.0[0],
         ])
     }
+
+    // interpolate
+    pub fn interpolate(self, target: Self, t: f32) -> Normal {
+        self * (1.0 - t) + target * t
+    }
 }
 
 // implement indexing into normal

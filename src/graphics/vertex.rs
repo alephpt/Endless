@@ -39,6 +39,15 @@ impl Vertex {
         (a.position - self.position).cross(b.position - self.position).into()
     }
 
+    // interpolate
+    pub fn interpolate(self, target: Vertex, t: f32) -> Vertex {
+        Vertex::new(
+            self.position.interpolate(target.position, t),
+            self.color.interpolate(target.color, t),
+            self.normal.interpolate(target.normal, t),
+        )
+    }
+
     pub fn desc<'a>() -> wgpu::VertexBufferLayout<'a> {
         wgpu::VertexBufferLayout {
             array_stride: std::mem::size_of::<Vertex>() as wgpu::BufferAddress,
@@ -55,6 +64,24 @@ impl Vertex {
                     format: wgpu::VertexFormat::Float32x4
                 },
             ]
+        }
+    }
+}
+
+// impl adding two verts
+impl std::ops::Add for Vertex {
+    type Output = Vertex;
+
+    fn add(self, other: Vertex) -> Vertex {
+        Vertex {
+            position: [
+                self.position[0] + other.position[0],
+                self.position[1] + other.position[1],
+                self.position[2] + other.position[2],
+                self.position[3],
+            ].into(),
+            color: self.color + other.color,
+            normal: self.normal + other.normal,
         }
     }
 }
@@ -107,8 +134,8 @@ impl std::ops::Div<f32> for Vertex {
                 self.position[2] / other,
                 self.position[3],
             ].into(),
-            color: self.color,
-            normal: self.normal,
+            color: self.color / other,
+            normal: self.normal / other,
         }
     }
 }
