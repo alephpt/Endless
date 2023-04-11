@@ -7,99 +7,170 @@ use crate::graphics::normal::Normal;
 use crate::graphics::primitives::quad::Square;
 
 
-pub struct cube {
+#[derive(Debug)]
+pub struct Cube {
     pub fill: bool,
     pub origin: Position,
     pub size: f32,
     pub mesh: Mesh,
 }
 
-impl cube {
+impl Cube {
     pub fn new(origin: Position, size: f32) -> Self {
         Self {
             fill: true,
-            origin: origin,
-            size: size,
-            mesh: cube::cube(origin, size),
+            origin,
+            size,
+            mesh: Cube::cube1(origin, size),
         }
     }
 
-    pub fn cube(origin: Position, size: f32) -> Mesh {
+    pub fn cube1(origin: Position, size: f32) -> Mesh {
         let mut vertices = vec![];
         let mut indices = vec![];
 
         let x = origin.x;
         let y = origin.y;
         let z = origin.z;
-        let center_offset = size / 2.0;
+        let offset = size / 2.0;
+
 
         // create 8 vertices for the cube
-
         // front face 
-        let v1 = Vertex::new(
-            Position::new(x - center_offset, y + center_offset, z - center_offset, 1.0), 
+        // front right top
+        let frt = Vertex::new(
+            Position::new(x - offset, y + offset, z + offset, 1.0), 
             Color::black(), 
             Normal::new(0.0, 0.0, 1.0));
-        let v2 = Vertex::new(
-            Position::new(x - center_offset, y - center_offset, z - center_offset, 1.0), 
+        // front left top
+        let flt = Vertex::new(
+            Position::new(x - offset, y - offset, z + offset, 1.0), 
             Color::cyan(), 
             Normal::new(0.0, 0.0, 1.0));
-        let v3 = Vertex::new(
-            Position::new(x + center_offset, y + center_offset, z - center_offset, 1.0), 
+        // front left bottom
+        let flb = Vertex::new(
+            Position::new(x + offset, y + offset, z + offset, 1.0), 
             Color::yellow(), 
             Normal::new(0.0, 0.0, 1.0));
-        let v4 = Vertex::new(
-            Position::new(x + center_offset, y - center_offset, z - center_offset, 1.0), 
+        // front right bottom
+        let frb = Vertex::new(
+            Position::new(x + offset, y - offset, z + offset, 1.0), 
             Color::magenta(), 
             Normal::new(0.0, 0.0, 1.0));
 
         // back face
-        let v5 = Vertex::new(
-            Position::new(x - center_offset, y + center_offset, z + center_offset, 1.0), 
-            Color::black(), 
+        // back left top
+        let blt = Vertex::new(
+            Position::new(x + offset, y + offset, z - offset, 1.0), 
+            Color::green(), 
             Normal::new(0.0, 0.0, 1.0));
-        let v6 = Vertex::new(
-            Position::new(x - center_offset, y - center_offset, z + center_offset, 1.0), 
-            Color::cyan(), 
+        // back right top
+        let brt = Vertex::new(
+            Position::new(x + offset, y - offset, z - offset, 1.0), 
+            Color::blue(), 
             Normal::new(0.0, 0.0, 1.0));
-        let v7 = Vertex::new(
-            Position::new(x + center_offset, y + center_offset, z + center_offset, 1.0), 
-            Color::yellow(), 
+        // back right bottom
+        let brb = Vertex::new(
+            Position::new(x - offset, y + offset, z - offset, 1.0), 
+            Color::red(), 
             Normal::new(0.0, 0.0, 1.0));
-        let v8 = Vertex::new(
-            Position::new(x + center_offset, y - center_offset, z + center_offset, 1.0), 
-            Color::magenta(), 
+        // back left bottom
+        let blb = Vertex::new(
+            Position::new(x - offset, y - offset, z - offset, 1.0), 
+            Color::white(), 
             Normal::new(0.0, 0.0, 1.0));
 
-        // create 12 lines and their ccw triangles to make a cube mesh based on a the origin and size
-        // front face
-        let mut f1 = Square::new(v1, v2, v3, v4);
-        // back face
-        let mut f2 = Square::new(v5, v6, v7, v8);
-        // left face
-        let mut f3 = Square::new(v1, v2, v5, v6);
-        // right face
-        let mut f4 = Square::new(v3, v4, v7, v8);
-        // top face
-        let mut f5 = Square::new(v1, v3, v5, v7);
-        // bottom face
-        let mut f6 = Square::new(v2, v4, v6, v8);
+        // add vertices and indices
+        vertices.push(frt);
+        vertices.push(flt);
+        vertices.push(flb);
+        vertices.push(frb);
+        vertices.push(blt);
+        vertices.push(brt);
+        vertices.push(brb);
+        vertices.push(blb);
 
-        // add the vertices and indices to the mesh
-        vertices.append(&mut f1.mesh.vertices);
-        vertices.append(&mut f2.mesh.vertices);
-        vertices.append(&mut f3.mesh.vertices);
-        vertices.append(&mut f4.mesh.vertices);
-        vertices.append(&mut f5.mesh.vertices);
-        vertices.append(&mut f6.mesh.vertices);
+        // wind the indices in clockwise
+        // front face         // 012  132
+        indices.push(0);
+        indices.push(1);
+        indices.push(2);
 
-        indices.append(&mut f1.mesh.indices);
-        indices.append(&mut f2.mesh.indices);
-        indices.append(&mut f3.mesh.indices);
-        indices.append(&mut f4.mesh.indices);
-        indices.append(&mut f5.mesh.indices);
-        indices.append(&mut f6.mesh.indices);
+        indices.push(1);
+        indices.push(3);
+        indices.push(2);
+
+        // back face        // 456 576
+        indices.push(4);
+        indices.push(5);
+        indices.push(6);
+
+        indices.push(5);
+        indices.push(7);
+        indices.push(6);
+
+        // left face          // 670 710
+        indices.push(6);
+        indices.push(7);
+        indices.push(0);
+
+        indices.push(7);
+        indices.push(1);
+        indices.push(0);
+
+        // right face        // 234 354
+        indices.push(2);
+        indices.push(3);
+        indices.push(4);
+
+        indices.push(3);
+        indices.push(5);
+        indices.push(4);
+
+        // top face        // 173 753
+        indices.push(1);
+        indices.push(7);
+        indices.push(3);
+
+        indices.push(7);
+        indices.push(5);
+        indices.push(4);
+
+        // bottom face     // 604 024
+        indices.push(6);
+        indices.push(0);
+        indices.push(4);
+
+        indices.push(0);
+        indices.push(2);
+        indices.push(4);
+
+
 
         Mesh::new(vertices, indices)
+    }
+
+    // rotate cube around origin
+    pub fn rotate(&mut self, angle: f32, axis: Position) {
+        self.mesh.rotate(axis, self.origin, angle);
+    }
+
+    // translate cube
+    pub fn translate(&mut self, displacement: Position) {
+        self.origin += displacement;
+        self.mesh.translate(displacement);
+    }
+}
+
+// implement format for the cube
+impl std::fmt::Display for Cube {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "Cube {{ 
+                        origin: {}, 
+                        size: {},
+                        Vectors: {{ 
+                            vertices: {:?}, 
+                            indices: {} }} 
+                            ", self.origin, self.size, self.mesh.vertices, self.mesh.indices.len())
     }
 }

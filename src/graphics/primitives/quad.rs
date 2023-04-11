@@ -1,5 +1,8 @@
 use crate::graphics::Mesh;
 use crate::graphics::Vertex;
+use crate::graphics::Position;
+use crate::graphics::Color;
+use crate::graphics::Normal;
 
 pub struct Square {
     pub fill: bool, // used to determine if these are lines of solid squares
@@ -8,15 +11,45 @@ pub struct Square {
 
 impl Square {
     // instantiate a new square
-    pub fn new(v1: Vertex, v2: Vertex, v3: Vertex, v4: Vertex) -> Self {
+    pub fn new(origin: Position, size: f32) -> Self {
         Self {
             fill: true,
-            mesh: Square::square(v1, v2, v3, v4),
+            mesh: Square::square(origin, size),
         }
     }
 
     // create a square mesh based on four vertices
-    pub fn square(v1: Vertex, v2: Vertex, v3: Vertex, v4: Vertex) -> Mesh {
+    pub fn square(origin: Position, size: f32) -> Mesh {
+        let x = origin.x;
+        let y = origin.y;
+        let z = origin.z;
+
+        let offset = size / 2.0;
+
+        let v1 = Vertex::new(
+            Position::new(x - offset, y + offset, z, 1.0), 
+            Color::black(), 
+            Normal::new(0.0, 0.0, 1.0),
+        );
+
+        let v2 = Vertex::new(
+            Position::new(x - offset, y - offset, 0.0, 1.0), 
+            Color::cyan(), 
+            Normal::new(0.0, 0.0, 1.0),
+        );
+
+        let v3 = Vertex::new(
+            Position::new(x + offset, y + offset, 0.0, 1.0), 
+            Color::yellow(), 
+            Normal::new(0.0, 0.0, 1.0)
+        );
+
+        let v4 = Vertex::new(
+            Position::new(x + offset, y - offset, 0.0, 1.0), 
+            Color::magenta(), 
+            Normal::new(0.0, 0.0, 1.0)
+        );
+
         Mesh::new(vec![v1, v2, v3, v4], vec![0, 1, 2, 1, 3, 2])
     }
 

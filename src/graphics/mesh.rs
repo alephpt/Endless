@@ -14,37 +14,25 @@ impl Mesh {
     }
 
     // length of distance between start and end point
-    pub fn vertex_length(start: [f32; 4], end: [f32; 4]) -> f32 {
-        let x = end[0] - start[0];
-        let y = end[1] - start[1];
-        let z = end[2] - start[2];
-
-        (x * x + y * y + z * z).sqrt()
+    pub fn vertex_length(start: Position, end: Position) -> f32 {
+        (end - start).sqrt()
     }
 
     // direction of the line from start to end point
-    pub fn vertex_direction(start: [f32; 4], end: [f32; 4]) -> [f32; 4] {
+    pub fn vertex_direction(start: Position, end: Position) -> Position {
         let length = Mesh::vertex_length(start, end);
 
-        let x = (end[0] - start[0]) / length;
-        let y = (end[1] - start[1]) / length;
-        let z = (end[2] - start[2]) / length;
-
-        [x, y, z, 0.0]
+        end - start / length
     }
 
     // dot product of two vectors
-    pub fn dot_product(a: [f32; 4], b: [f32; 4]) -> f32 {
-        a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
+    pub fn dot_product(a: Position, b: Position) -> f32 {
+        a.dot(b)
     }
 
     // cross product of two vectors
-    pub fn cross_product(a: [f32; 4], b: [f32; 4]) -> [f32; 3] {
-        let x = a[1] * b[2] - a[2] * b[1];
-        let y = a[2] * b[0] - a[0] * b[2];
-        let z = a[0] * b[1] - a[1] * b[0];
-
-        [x, y, z]
+    pub fn cross_product(a: Position, b: Position) -> Position {
+        a.cross(b)
     }
 
     // calculate normal of a triangle surface based on three points
@@ -70,6 +58,20 @@ impl Mesh {
 
         self.vertices = vertices;
         self.indices = indices;
+    }
+
+    // rotate mesh around an axis
+    pub fn rotate(&mut self, axis: Position, origin: Position, angle: f32) {
+        for vertex in &mut self.vertices {
+            vertex.position.rotate(angle, origin,  axis);
+        }
+    }
+
+    // translate mesh
+    pub fn translate(&mut self, position: Position) {
+        for vertex in &mut self.vertices {
+            vertex.position += position;
+        }
     }
 }
 

@@ -37,6 +37,10 @@ impl Position {
         self.distance(self)
     }
 
+    pub fn sqrt(self) -> f32 {
+        (self.x * self.x + self.y * self.y).sqrt()
+    }
+
     // noramlize a position
     pub fn normalize(self) -> Position {
         let magnitude = self.magnitude();
@@ -57,6 +61,14 @@ impl Position {
             self.w * target.w - self.w * target.w,
         )
     }
+
+    // dot product
+    pub fn dot(self, target: Position) -> f32 {
+        self.x * target.x + self.y * target.y + self.z * target.z + self.w * target.w
+    }
+
+    // square root of a position
+
 
     // find the next position in a given direction
     pub fn find_next(self, direction: Position, distance: f32) -> Position {
@@ -289,6 +301,17 @@ impl std::ops::Mul<Normal> for Position {
         Self::new(self.x * rhs[0], self.y * rhs[1], self.z * rhs[2], self.w)
     }
 }
+
+// implement negative for position
+impl std::ops::Neg for Position {
+    type Output = Self;
+
+    fn neg(self) -> Self::Output {
+        Self::new(-self.x, -self.y, -self.z, self.w)
+    }
+}
+
+
 
 // check if position is equal to another position
 impl PartialEq for Position {

@@ -5,12 +5,16 @@ use winit::{
     event_loop::{ControlFlow, EventLoop},
     window::{WindowBuilder, Window},
 };
-use crate::graphics::vertex::Vertex;
-use crate::graphics::mesh::Mesh;
+use crate::graphics::Vertex;
+use crate::graphics::Mesh;
+use crate::graphics::Position;
+use crate::graphics::Cube;
+
 
 #[derive(Debug)]
 pub struct Mouse {
     pub mouse_position: winit::dpi::PhysicalPosition<f64>,
+    pub prev_mouse_position: winit::dpi::PhysicalPosition<f64>,
     pub l_mouse_down: bool,
     pub m_mouse_down: bool,
     pub r_mouse_down: bool,
@@ -23,21 +27,22 @@ pub struct Graphics {
     pub device: wgpu::Device,
     pub render_pipeline: wgpu::RenderPipeline,
     pub vertex_buffer: wgpu::Buffer,
-    pub n_vertices: u32,
     pub index_buffer: wgpu::Buffer,
-    pub n_indices: u32,
     pub queue: wgpu::Queue,
     pub config: wgpu::SurfaceConfiguration,
     pub size: winit::dpi::PhysicalSize<u32>,
     pub mouse_state: Mouse,
+    pub cube: Cube,
+    pub n_vertices: u32,
+    pub n_indices: u32,
 }
 
 impl Graphics {
-    pub async fn new(window: Window, mesh: &Mesh) -> Self {
+    pub async fn new(window: Window, cube: Cube) -> Self {
         const WINDOW_HEIGHT: u32 = 1200;
         const WINDOW_WIDTH: u32 = 1600;
-        let n_vertices: u32 = mesh.vertices.len() as u32;
-        let n_indices = mesh.indices.len() as u32;
+        let n_vertices: u32 = cube.mesh.vertices.len() as u32;
+        let n_indices = cube.mesh.indices.len() as u32;
 
         // Initialize logger
         cfg_if::cfg_if! {
@@ -186,7 +191,7 @@ impl Graphics {
         let vertex_buffer = device.create_buffer_init(
             &wgpu::util::BufferInitDescriptor {
                 label: Some("Vertex Buffer"),
-                contents: bytemuck::cast_slice(&mesh.vertices),
+                contents: bytemuck::cast_slice(&cube.mesh.vertices),
                 usage: wgpu::BufferUsages::VERTEX,
             }
         );
@@ -195,7 +200,7 @@ impl Graphics {
         let index_buffer = device.create_buffer_init(
             &wgpu::util::BufferInitDescriptor {
                 label: Some("Index Buffer"),
-                contents: bytemuck::cast_slice(&mesh.indices),
+                contents: bytemuck::cast_slice(&cube.mesh.indices),
                 usage: wgpu::BufferUsages::INDEX,
             }
         );
@@ -206,6 +211,7 @@ impl Graphics {
         // create the mouse state
         let mouse_state = Mouse {
             mouse_position: winit::dpi::PhysicalPosition::new(0.0, 0.0),
+            prev_mouse_position: winit::dpi::PhysicalPosition::new(0.0, 0.0),
             l_mouse_down: false,
             m_mouse_down: false,
             r_mouse_down: false,
@@ -217,13 +223,14 @@ impl Graphics {
             device,
             render_pipeline,
             vertex_buffer,
-            n_vertices,
             index_buffer,
-            n_indices,
             queue,
             config,
             size,
-            mouse_state
+            mouse_state,
+            cube,
+            n_vertices,
+            n_indices,
         }
     }
 
@@ -285,7 +292,33 @@ impl Graphics {
     }
 
     pub fn update(&mut self) {
+        // if the mouse button is pushed down
+        if self.mouse_state.l_mouse_down {
+            // determine axis of rotation
+            let axis = Position::new(
+                (self.mouse_state.mouse_position.y - self.mouse_state.prev_mouse_position.y) as f32,
+                (self.mouse_state.mouse_position.x - self.mouse_state.prev_mouse_position.x) as f32,
+                0.0,
+                1.0,
+            );
 
+            // determine angle of rotation
+            let angle = (self.mouse_state.mouse_position.x - self.mouse_state.prev_mouse_position.x) as f32;
+
+            // rotate the mesh based on the mouse position against the previous mouse position
+            self.cube.rotate(
+                angle,
+                axis
+            );
+
+            // update the previous mouse position
+            self.mouse_state.prev_mouse_position = self.mouse_state.mouse_position;
+        }
+        // if the mouse button is not pushed down
+        else {
+            // update the previous mouse position
+            self.mouse_state.prev_mouse_position = self.mouse_state.mouse_position;
+        }
     }
 
     pub fn resize(&mut self, new_size: winit::dpi::PhysicalSize<u32>) {
@@ -338,10 +371,10 @@ impl Graphics {
 }
 
 #[cfg_attr(target_arch="wasm32", wasm_bindgen(start))]
-pub async fn run(mesh: Mesh) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn run(cube: Cube) -> Result<(), Box<dyn std::error::Error>> {
     let event_loop = EventLoop::new();
     let window = Graphics::new_window(&event_loop);
-    let mut graphics = Graphics::new(window, &mesh).await;
+    let mut graphics = Graphics::new(window, cube).await;
 
     event_loop.run(move |event, _, control_flow| match event {
         Event::WindowEvent {
