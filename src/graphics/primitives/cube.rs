@@ -145,8 +145,6 @@ impl Cube {
         indices.push(2);
         indices.push(4);
 
-
-
         Mesh::new(vertices, indices)
     }
 

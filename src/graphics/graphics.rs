@@ -294,16 +294,27 @@ impl Graphics {
     pub fn update(&mut self) {
         // if the mouse button is pushed down
         if self.mouse_state.l_mouse_down {
-            // determine axis of rotation
-            let axis = Position::new(
-                (self.mouse_state.mouse_position.y - self.mouse_state.prev_mouse_position.y) as f32,
-                (self.mouse_state.mouse_position.x - self.mouse_state.prev_mouse_position.x) as f32,
-                0.0,
-                1.0,
-            );
+            let current_mouse_pos = self.mouse_state.mouse_position;
 
-            // determine angle of rotation
-            let angle = (self.mouse_state.mouse_position.x - self.mouse_state.prev_mouse_position.x) as f32;
+            // calculate dx and dy
+            let dx = (current_mouse_pos.x - self.mouse_state.prev_mouse_position.x) as f32;
+            let dy = (current_mouse_pos.y - self.mouse_state.prev_mouse_position.y) as f32;
+
+            // check that dx and dy are numbers
+            if dx.is_nan() || dy.is_nan() {
+                return;
+            }
+            
+            // find the normalized direction of the mouse movement
+            let magnitude = (dx * dx + dy * dy).sqrt();
+            let x = dx / magnitude as f32;
+            let y = dy / magnitude as f32;
+
+            // create xyz axis
+            let axis = Position::new(x, y, 0.0, 1.0);
+
+            // convert x and y displacement to an angle in degrees
+            let angle = (magnitude / 100.0) * 360.0;
 
             // rotate the mesh based on the mouse position against the previous mouse position
             self.cube.rotate(
@@ -311,8 +322,9 @@ impl Graphics {
                 axis
             );
 
+  //          println!("dx: {}, dy: {}, magnitude: {}, x: {}, y: {}, angle: {}", dx, dy, magnitude, x, y, angle);
             // update the previous mouse position
-            self.mouse_state.prev_mouse_position = self.mouse_state.mouse_position;
+            self.mouse_state.prev_mouse_position = current_mouse_pos;
         }
         // if the mouse button is not pushed down
         else {
