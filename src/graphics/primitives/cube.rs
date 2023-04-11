@@ -23,6 +23,10 @@ impl Cube {
         }
     }
 
+    pub fn dedup(&mut self) {
+        self.mesh.dedup();
+    }
+
     pub fn cube(origin: Position, size: f32) -> Mesh {
         let mut vertices = vec![];
         let mut indices = vec![];
@@ -164,7 +168,7 @@ impl Cube {
     // }
 
     // subdivide cube surfaces
-    pub fn subdivide(&mut self, subdivisions: u32) {
+    pub fn subdivide(&mut self, n_subdivisions: u32) {
         // create new vertex and index vectors
         let mut vertices: Vec<Vertex> = vec![];
         let mut indices: Vec<u16> = vec![];
@@ -178,57 +182,70 @@ impl Cube {
         let brt = self.mesh.vertices[5];
         let brb = self.mesh.vertices[6];
         let blb = self.mesh.vertices[7];
+        
+        // calculate step size
+        let n = 1 << n_subdivisions;
+        let step = 1.0 / n as f32;
 
-        // create a new cube based with new tris based on the subdivision size for each face
-        for i in 0..subdivisions {
-            for j in 0..subdivisions {
-                let t1 = i as f32 / subdivisions as f32;
-                let t2 = (i + 1) as f32 / subdivisions as f32;
-                let s1 = j as f32 / subdivisions as f32;
-                let s2 = (j + 1) as f32 / subdivisions as f32;
+    // create a new cube based with new tris based on the subdivision size for each face
+    for face_index in 0..6 {
+        let offset = face_index * n;
 
-                // calculate new verts for each face
-                for &(a, b, c, d) in &[
-                    (frt, flt, flb, frb), // front
-                    (blt, brt, brb, blb), // back
-                    (flt, blt, blb, flb), // left
-                    (brt, frt, frb, brb), // right
-                    (flt, blt, brt, frt), // top
-                    (flb, blb, brb, frb), // bottom
-                ] {
-                    let ac_t1 = a.interpolate(c, t1);
-                    let ac_t2 = a.interpolate(c, t2);
-                    let bd_t1 = b.interpolate(d, t1);
-                    let bd_t2 = b.interpolate(d, t2);
+        let winding_order = match face_index {
+            0 | 2 => [0, 1, 2, 1, 3, 2],
+            1 | 3 => [0, 2, 1, 1, 2, 3],
+            4 => [0, 1, 3, 1, 2, 3],
+            5 => [0, 3, 1, 1, 3, 2],
+            _ => unreachable!(),
+        };
+
+        let (a, b, c, d) = match face_index {
+            0 => (frt, flt, flb, frb), // front
+            1 => (blt, brt, brb, blb), // back
+            2 => (flt, blt, blb, flb), // left
+            3 => (brt, frt, frb, brb), // right
+            4 => (blt, flt, frt, brt), // top
+            5 => (frb, brb, blb, flb), // bottom
+            _ => unreachable!(),
+        };
+
+        // create the vertices
+        for i in 0..=n {
+            let t1 = i as f32 * step;
+            for j in 0..=n {
+                let t2 = j as f32 * step;
     
-                    let v1 = ac_t1.interpolate(bd_t1, s1);
-                    let v2 = ac_t1.interpolate(bd_t1, s2);
-                    let v3 = ac_t2.interpolate(bd_t2, s1);
-                    let v4 = ac_t2.interpolate(bd_t2, s2);
+                let ab = a.interpolate(b, t2);
+                let cd = c.interpolate(d, t2);
+                let vert = ab.interpolate(cd, t1);
     
-                    // calculate the index
-                    let index = vertices.len() as u16;
-    
-                    // add new vertices
-                    vertices.push(v1);
-                    vertices.push(v2);
-                    vertices.push(v3);
-                    vertices.push(v4);
-    
-                    // add new indices
-                    indices.push(index + 2);
-                    indices.push(index + 3);
-                    indices.push(index + 1);
-                    indices.push(index + 2);
-                    indices.push(index + 1);
-                    indices.push(index);
-                }
+                // add the vertex to the list
+                vertices.push(vert);
             }
         }
 
-        // set the new vertices and indices
-        self.mesh.vertices = vertices;
-        self.mesh.indices = indices;
+        // create the indices
+        for i in 0..n {
+            for j in 0..n {
+                let index = i * (n + 1) + j;
+
+                // triangle 1
+                indices.push((index + n + 1) as u16);
+                indices.push(index as u16);
+                indices.push((index + (n + 1) + 1) as u16);
+
+                // triangle 2
+                indices.push(index as u16);
+                indices.push((index + 1) as u16);
+                indices.push((index + (n + 1) + 1) as u16);
+            }
+        }
+
+    }
+    
+    // set the new vertices and indices
+    self.mesh.vertices = vertices;
+    self.mesh.indices = indices;
     }
 }
 
