@@ -7,5 +7,9 @@ fn main() {
     cube.subdivide(6);
     cube.dedup();
 
+    // print number of verts and indices
+    println!("Verts: {}", cube.mesh.vertices.len());
+    println!("Indices: {}", cube.mesh.indices.len());
+
     let _ = pollster::block_on(run(cube));
 }
