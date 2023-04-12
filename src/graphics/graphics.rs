@@ -7,8 +7,7 @@ use winit::{
 };
 use crate::graphics::Vertex;
 use crate::graphics::Position;
-use crate::graphics::Cube;
-
+use crate::graphics::Geometry;
 
 #[derive(Debug)]
 pub struct Mouse {
@@ -31,17 +30,17 @@ pub struct Graphics {
     pub config: wgpu::SurfaceConfiguration,
     pub size: winit::dpi::PhysicalSize<u32>,
     pub mouse_state: Mouse,
-    pub cube: Cube,
+    pub geometry: Geometry,
     pub n_vertices: u32,
     pub n_indices: u32,
 }
 
 impl Graphics {
-    pub async fn new(window: Window, cube: Cube) -> Self {
+    pub async fn new(window: Window, geometry: Geometry) -> Self {
         const WINDOW_HEIGHT: u32 = 1200;
         const WINDOW_WIDTH: u32 = 1600;
-        let n_vertices: u32 = cube.mesh.vertices.len() as u32;
-        let n_indices = cube.mesh.indices.len() as u32;
+        let n_vertices: u32 = geometry.vertex_len() as u32;
+        let n_indices = geometry.index_len() as u32;
 
         // Initialize logger
         cfg_if::cfg_if! {
@@ -190,7 +189,7 @@ impl Graphics {
         let vertex_buffer = device.create_buffer_init(
             &wgpu::util::BufferInitDescriptor {
                 label: Some("Vertex Buffer"),
-                contents: bytemuck::cast_slice(&cube.mesh.vertices),
+                contents: bytemuck::cast_slice(geometry.vertices()),
                 usage: wgpu::BufferUsages::VERTEX,
             }
         );
@@ -199,7 +198,7 @@ impl Graphics {
         let index_buffer = device.create_buffer_init(
             &wgpu::util::BufferInitDescriptor {
                 label: Some("Index Buffer"),
-                contents: bytemuck::cast_slice(&cube.mesh.indices),
+                contents: bytemuck::cast_slice(geometry.indices()),
                 usage: wgpu::BufferUsages::INDEX,
             }
         );
@@ -227,7 +226,7 @@ impl Graphics {
             config,
             size,
             mouse_state,
-            cube,
+            geometry,
             n_vertices,
             n_indices,
         }
@@ -322,7 +321,7 @@ impl Graphics {
             let angle = (magnitude / 100.0) * 360.0  * 0.01;
 
             // rotate the mesh based on the mouse position against the previous mouse position
-            self.cube.rotate(
+            self.geometry.rotate(
                 angle,
                 axis
             );
@@ -334,7 +333,7 @@ impl Graphics {
             self.vertex_buffer = self.device.create_buffer_init(
                 &wgpu::util::BufferInitDescriptor {
                     label: Some("Vertex Buffer"),
-                    contents: bytemuck::cast_slice(&self.cube.mesh.vertices),
+                    contents: bytemuck::cast_slice(self.geometry.vertices()),
                     usage: wgpu::BufferUsages::VERTEX,
                 }
             );
@@ -394,10 +393,10 @@ impl Graphics {
 }
 
 #[cfg_attr(target_arch="wasm32", wasm_bindgen(start))]
-pub async fn run(cube: Cube) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn run(geometry: Geometry) -> Result<(), Box<dyn std::error::Error>> {
     let event_loop = EventLoop::new();
     let window = Graphics::new_window(&event_loop);
-    let mut graphics = Graphics::new(window, cube).await;
+    let mut graphics = Graphics::new(window, geometry).await;
 
     event_loop.run(move |event, _, control_flow| match event {
         Event::WindowEvent {

@@ -15,11 +15,6 @@ impl Position {
         Self { x, y, z, w }
     }
 
-    // create constant positions
-    pub const fn new_const(x: f32, y: f32, z: f32, w: f32) -> Self {
-        Self { x, y, z, w }
-    }
-
     // get the distance between two positions
     pub fn distance(self, target: Position) -> f32 {
         let d = self - target;
@@ -75,7 +70,7 @@ impl Position {
     // rotate a position around the origin across an axis
     pub fn rotate(&self, angle: f32, origin: Position, axis: Position) -> Position {
         // trnaslate the position to the origin
-        let mut position = *self - origin;
+        let position = *self - origin;
 
         // normalize the axis
         let axis = axis.normalize();

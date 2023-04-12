@@ -29,9 +29,9 @@ impl Line {
     }
 
     // calculate length, direction, normal, and create a line mesh based on a thickness and subdivision rate
-    pub fn line(start_vertex: Vertex, end_vertex: Vertex, thickness: f32, subdivision: u32) -> Mesh {
+    pub fn line(start_vertex: Vertex, end_vertex: Vertex, _thickness: f32, _subdivision: u32) -> Mesh {
         // determine the length of the mesh
-        let length = Mesh::vertex_length(start_vertex.position.into(), end_vertex.position.into());
+        let _length = Mesh::vertex_length(start_vertex.position.into(), end_vertex.position.into());
 
         // return new mesh
         Mesh::new(

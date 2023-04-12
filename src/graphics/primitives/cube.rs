@@ -6,7 +6,7 @@ use crate::graphics::Color;
 use crate::graphics::Normal;
 use crate::graphics::Square;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Cube {
     pub fill: bool,
     pub origin: Position,
@@ -41,7 +41,7 @@ impl Cube {
         // create 8 vertices for the cube
         // front face 
         // front right top
-        let frt = Vertex::new(
+        let flb = Vertex::new(
             Position::new(x - offset, y + offset, z + offset, 1.0), 
             Color::black(), 
             Normal::new(0.0, 0.0, 1.0));
@@ -51,12 +51,12 @@ impl Cube {
             Color::cyan(), 
             Normal::new(0.0, 0.0, 1.0));
         // front left bottom
-        let flb = Vertex::new(
+        let frb = Vertex::new(
             Position::new(x + offset, y + offset, z + offset, 1.0), 
             Color::yellow(), 
             Normal::new(0.0, 0.0, 1.0));
         // front right bottom
-        let frb = Vertex::new(
+        let frt = Vertex::new(
             Position::new(x + offset, y - offset, z + offset, 1.0), 
             Color::magenta(), 
             Normal::new(0.0, 0.0, 1.0));
@@ -66,32 +66,32 @@ impl Cube {
         // back right bottom
         let brb = Vertex::new(
             Position::new(x + offset, y + offset, z - offset, 1.0), 
-            Color::red(), 
+            Color::green(), 
             Normal::new(0.0, 0.0, 1.0));
         // back right top
         let brt = Vertex::new(
             Position::new(x + offset, y - offset, z - offset, 1.0), 
-            Color::blue(), 
+            Color::white(), 
             Normal::new(0.0, 0.0, 1.0));
         // back left bottom
         let blb = Vertex::new(
             Position::new(x - offset, y + offset, z - offset, 1.0), 
-            Color::white(), 
+            Color::red(), 
             Normal::new(0.0, 0.0, 1.0));
         // back left top
         let blt = Vertex::new(
             Position::new(x - offset, y - offset, z - offset, 1.0), 
-            Color::green(), 
+            Color::blue(), 
             Normal::new(0.0, 0.0, 1.0));
 
 
 
 
         // add vertices and indices
-        vertices.push(frt);             // black - 0
+        vertices.push(flb);             // black - 0
         vertices.push(flt);             // cyan - 1
-        vertices.push(flb);             // yellow - 2
-        vertices.push(frb);             // magenta - 3
+        vertices.push(frb);             // yellow - 2
+        vertices.push(frt);             // magenta - 3
         vertices.push(brb);             // red - 4
         vertices.push(brt);             // blue - 5
         vertices.push(blb);             // white - 6 

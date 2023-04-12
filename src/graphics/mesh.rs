@@ -2,7 +2,7 @@ use crate::graphics::vertex::Vertex;
 use crate::graphics::position::Position;
 use crate::graphics::normal::Normal;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Mesh {
     pub vertices: Vec<Vertex>,
     pub indices: Vec<u16>,

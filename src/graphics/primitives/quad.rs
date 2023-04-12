@@ -4,8 +4,11 @@ use crate::graphics::Position;
 use crate::graphics::Color;
 use crate::graphics::Normal;
 
+#[derive(Debug, Clone)]
 pub struct Square {
     pub fill: bool, // used to determine if these are lines of solid squares
+    pub origin: Position,
+    pub size: f32,
     pub mesh: Mesh,
 }
 
@@ -14,6 +17,8 @@ impl Square {
     pub fn new(origin: Position, size: f32) -> Self {
         Self {
             fill: true,
+            origin,
+            size,
             mesh: Square::square(origin, size),
         }
     }
@@ -57,10 +62,24 @@ impl Square {
     pub fn from_vertices(vertices: Vec<Vertex>) -> Self {
         let mesh = Mesh::new(vertices, vec![0, 1, 2, 1, 3, 2]);
 
+        let p1 = mesh.vertices[0].position;
+        let p2 = mesh.vertices[1].position;
+        let p3 = mesh.vertices[2].position;
+        let p4 = mesh.vertices[3].position;
+
+        let origin = (p1 + p2 + p3 + p4) / 4.0;
+        let size = (p1.distance(p2) + p3.distance(p4)) / 2.0;
+
         Self {
             fill: true,
+            origin,
+            size,
             mesh,
         }
+    }
+
+    pub fn rotate(&mut self, angle: f32, axis: Position) {
+        self.mesh.rotate(axis, self.origin, angle);
     }
 
     pub fn dedup(&mut self) {
