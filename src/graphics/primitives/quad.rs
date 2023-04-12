@@ -3,6 +3,7 @@ use crate::graphics::Vertex;
 use crate::graphics::Position;
 use crate::graphics::Color;
 use crate::graphics::Normal;
+use crate::graphics::Geometry;
 
 #[derive(Debug, Clone)]
 pub struct Square {
@@ -13,18 +14,22 @@ pub struct Square {
 }
 
 impl Square {
+    pub fn new(origin: Position, size: f32) -> Geometry {
+        Geometry::Square(Self::quad(origin, size))
+    }
+
     // instantiate a new square
-    pub fn new(origin: Position, size: f32) -> Self {
+    pub fn quad(origin: Position, size: f32) -> Self {
         Self {
             fill: true,
             origin,
             size,
-            mesh: Square::square(origin, size),
+            mesh: Square::mesh(origin, size),
         }
     }
 
     // create a square mesh based on four vertices
-    pub fn square(origin: Position, size: f32) -> Mesh {
+    pub fn mesh(origin: Position, size: f32) -> Mesh {
         let x = origin.x;
         let y = origin.y;
         let z = origin.z;
@@ -76,10 +81,6 @@ impl Square {
             size,
             mesh,
         }
-    }
-
-    pub fn rotate(&mut self, angle: f32, axis: Position) {
-        self.mesh.rotate(axis, self.origin, angle);
     }
 
     pub fn dedup(&mut self) {

@@ -5,6 +5,7 @@ use crate::graphics::Position;
 use crate::graphics::Color;
 use crate::graphics::Normal;
 use crate::graphics::Square;
+use crate::graphics::Geometry;
 
 #[derive(Debug, Clone)]
 pub struct Cube {
@@ -15,20 +16,20 @@ pub struct Cube {
 }
 
 impl Cube {
-    pub fn new(origin: Position, size: f32) -> Self {
+    pub fn new(origin: Position, size: f32) -> Geometry {
+        Geometry::Cube(Self::cube(origin, size))
+    }
+
+    pub fn cube(origin: Position, size: f32) -> Self {
         Self {
             fill: true,
             origin,
             size,
-            mesh: Cube::cube(origin, size),
+            mesh: Cube::mesh(origin, size),
         }
     }
 
-    pub fn dedup(&mut self) {
-        self.mesh.dedup();
-    }
-
-    pub fn cube(origin: Position, size: f32) -> Mesh {
+    pub fn mesh(origin: Position, size: f32) -> Mesh {
         let mut vertices = vec![];
         let mut indices = vec![];
 
@@ -36,7 +37,6 @@ impl Cube {
         let y = origin.y;
         let z = origin.z;
         let offset = size / 2.0;
-
 
         // create 8 vertices for the cube
         // front face 
@@ -83,9 +83,6 @@ impl Cube {
             Position::new(x - offset, y - offset, z - offset, 1.0), 
             Color::blue(), 
             Normal::new(0.0, 0.0, 1.0));
-
-
-
 
         // add vertices and indices
         vertices.push(flb);             // black - 0
@@ -155,10 +152,6 @@ impl Cube {
         Mesh::new(vertices, indices)
     }
 
-    // rotate cube around origin
-    pub fn rotate(&mut self, angle: f32, axis: Position) {
-        self.mesh.rotate(axis, self.origin, angle);
-    }
 
     // translate cube
     pub fn translate(&mut self, displacement: Position) {

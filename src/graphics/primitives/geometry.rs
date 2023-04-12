@@ -21,9 +21,9 @@ pub enum Geometry {
 impl Geometry {
     pub fn new(origin: Position, size: f32, shape: Shape) -> Self {
         match shape {
-            Shape::Triangle => Self::Triangle(Triangle::new(origin, size)),
-            Shape::Cube => Self::Cube(Cube::new(origin, size)),
-            Shape::Square => Self::Square(Square::new(origin, size)),
+            Shape::Triangle => Self::Triangle(Triangle::triangle(origin, size)),
+            Shape::Cube => Self::Cube(Cube::cube(origin, size)),
+            Shape::Square => Self::Square(Square::quad(origin, size)),
         }
     }
 
@@ -94,99 +94,45 @@ impl Geometry {
 
 // implement generic geometry trait
 pub trait Geometric {
-    // new geometry
     fn new(origin: Position, size: f32) -> Self;
-
-    // get the mesh of an object
     fn mesh(&self) -> &Mesh;
-
-    // get the vertices of the geometry
     fn vertices(&self) -> &Vec<Vertex>;
-
-    // get the indices of the geometry
     fn indices(&self) -> &Vec<u16>;
-    
-    // get the number of vertices in the geometry
     fn vertex_len(&self) -> usize;
-
-    // get the number of indices in the geometry
     fn index_len(&self) -> usize;
-
-    // rotate the geometry around an axis
     fn rotate(&mut self, angle: f32, axis: Position);
+    fn dedup(&mut self);
 }
 
 impl Geometric for Triangle {
-    fn new(origin: Position, size: f32) -> Self {
-        Self::new(origin, size)
-    }
-
-    fn mesh(&self) -> &Mesh {
-        &self.mesh
-    }
-    fn vertices(&self) -> &Vec<Vertex> {
-        &self.mesh.vertices
-    }
-    fn indices(&self) -> &Vec<u16> {
-        &self.mesh.indices
-    }
-    fn vertex_len(&self) -> usize {
-        self.mesh.vertices.len()
-    }
-    fn index_len(&self) -> usize {
-        self.mesh.indices.len()
-    }
-    fn rotate(&mut self, angle: f32, axis: Position) {
-        self.rotate(angle, axis);
-    }
+    fn new(origin: Position, size: f32) -> Self { Self::triangle(origin, size) }
+    fn mesh(&self) -> &Mesh { &self.mesh }
+    fn vertices(&self) -> &Vec<Vertex> { &self.mesh.vertices }
+    fn indices(&self) -> &Vec<u16> { &self.mesh.indices }
+    fn vertex_len(&self) -> usize { self.mesh.vertices.len() }
+    fn index_len(&self) -> usize { self.mesh.indices.len() }
+    fn rotate(&mut self, angle: f32, axis: Position) { self.mesh.rotate(axis, self.origin, angle); }
+    fn dedup(&mut self) { self.mesh.dedup(); }
 }
 
 impl Geometric for Cube {
-    fn new(origin: Position, size: f32) -> Self {
-        Self::new(origin, size)
-    }
-
-    fn mesh(&self) -> &Mesh {
-        &self.mesh
-    }
-    fn vertices(&self) -> &Vec<Vertex> {
-        &self.mesh.vertices
-    }
-    fn indices(&self) -> &Vec<u16> {
-        &self.mesh.indices
-    }
-    fn vertex_len(&self) -> usize {
-        self.mesh.vertices.len()
-    }
-    fn index_len(&self) -> usize {
-        self.mesh.indices.len()
-    }
-    fn rotate(&mut self, angle: f32, axis: Position) {
-        self.rotate(angle, axis);
-    }
+    fn new(origin: Position, size: f32) -> Self { Self::cube(origin, size) }
+    fn mesh(&self) -> &Mesh { &self.mesh }
+    fn vertices(&self) -> &Vec<Vertex> { &self.mesh.vertices }
+    fn indices(&self) -> &Vec<u16> { &self.mesh.indices }
+    fn vertex_len(&self) -> usize { self.mesh.vertices.len() }
+    fn index_len(&self) -> usize { self.mesh.indices.len() }
+    fn rotate(&mut self, angle: f32, axis: Position) { self.mesh.rotate(axis, self.origin, angle); }
+    fn dedup(&mut self) { self.mesh.dedup(); }
 }
 
 impl Geometric for Square {
-    fn new(origin: Position, size: f32) -> Self {
-        Self::new(origin, size)
-    }
-
-    fn mesh(&self) -> &Mesh {
-        &self.mesh
-    }
-    fn vertices(&self) -> &Vec<Vertex> {
-        &self.mesh.vertices
-    }
-    fn indices(&self) -> &Vec<u16> {
-        &self.mesh.indices
-    }
-    fn vertex_len(&self) -> usize {
-        self.mesh.vertices.len()
-    }
-    fn index_len(&self) -> usize {
-        self.mesh.indices.len()
-    }
-    fn rotate(&mut self, angle: f32, axis: Position) {
-        self.rotate(angle, axis);
-    }
+    fn new(origin: Position, size: f32) -> Self { Self::quad(origin, size) }
+    fn mesh(&self) -> &Mesh { &self.mesh }
+    fn vertices(&self) -> &Vec<Vertex> { &self.mesh.vertices }
+    fn indices(&self) -> &Vec<u16> { &self.mesh.indices }
+    fn vertex_len(&self) -> usize { self.mesh.vertices.len() }
+    fn index_len(&self) -> usize { self.mesh.indices.len() }
+    fn rotate(&mut self, angle: f32, axis: Position) { self.mesh.rotate(axis, self.origin, angle); }
+    fn dedup(&mut self) { self.mesh.dedup(); }
 }

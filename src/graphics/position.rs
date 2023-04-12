@@ -364,7 +364,9 @@ mod tests {
         let origin = Position::new(0.0, 0.0, 0.0, 1.0);
         let axis = Position::new(0.0, 0.0, 1.0, 1.0);
 
-        let rotated = position.rotate(std::f32::consts::PI / 2.0, origin, axis);
+        let rotated = position.rotate(90.0, origin, axis);
+
+        println!("rotated: {}", rotated);
 
         assert_eq!(rotated.x, 0.0);
         assert_eq!(rotated.y, 1.0);

@@ -3,6 +3,7 @@ use crate::graphics::Vertex;
 use crate::graphics::Position;
 use crate::graphics::Color;
 use crate::graphics::Normal;
+use crate::graphics::Geometry;
 
 #[derive(Debug, Clone)]
 pub struct Triangle {
@@ -13,18 +14,22 @@ pub struct Triangle {
 }
 
 impl Triangle {
+    pub fn new(position: Position, size: f32) -> Geometry {
+        Geometry::Triangle(Self::triangle(position, size))
+    }
+
     // instantiate a new triangle
-    pub fn new(origin: Position, size: f32) -> Self {
+    pub fn triangle(origin: Position, size: f32) -> Self {
         Self {
             fill: true,
             origin, 
             size,
-            mesh: Triangle::triangle(origin, size),
+            mesh: Triangle::mesh(origin, size),
         }
     }
 
     // create a triangle mesh based on three vertices
-    pub fn triangle(origin: Position, size: f32) -> Mesh {
+    pub fn mesh(origin: Position, size: f32) -> Mesh {
         // calculate the altitude of the triangle
         let altitude = (size * 0.5).sqrt();
 
@@ -55,18 +60,8 @@ impl Triangle {
         Mesh::new(vertices, vec![0, 1, 2])
     }
 
-    // rotate the triangle around the origin
-    pub fn rotate(&mut self, angle: f32, axis: Position) {
-        self.mesh.rotate(axis, self.origin, angle);
-    }
-
     // subdivide the triangle
     pub fn subdivide(&mut self, _iterations: u32) {
         return;
-    }
-
-    // deduplicate the triangle
-    pub fn dedup(&mut self) {
-        self.mesh.dedup();
     }
 }
