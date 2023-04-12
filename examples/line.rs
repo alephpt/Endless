@@ -4,7 +4,6 @@ use endless::graphics::Vertex;
 use endless::graphics::Color;
 use endless::graphics::Position;
 use endless::graphics::Normal;
-use endless::graphics::run;
 
 fn _plot_line(line: Line, screen_width: u32, screen_height: u32) {
     let mut screen = vec![vec![' '; screen_width as usize]; screen_height as usize];
