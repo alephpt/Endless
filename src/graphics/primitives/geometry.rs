@@ -1,3 +1,4 @@
+use crate::graphics::Spherical;
 use crate::graphics::Cube;
 use crate::graphics::Triangle;
 use crate::graphics::Square;
@@ -7,8 +8,9 @@ use crate::graphics::Mesh;
 
 pub enum Shape {
     Triangle,
-    Cube,
     Square,
+    Cube,
+    Sphere,
 }
 
 #[derive(Debug, Clone)]
@@ -16,6 +18,7 @@ pub enum Geometry {
     Triangle(Triangle),
     Cube(Cube),
     Square(Square),
+    Sphere(Spherical)
 }
 
 impl Geometry {
@@ -24,6 +27,7 @@ impl Geometry {
             Shape::Triangle => Self::Triangle(Triangle::triangle(origin, size)),
             Shape::Cube => Self::Cube(Cube::cube(origin, size)),
             Shape::Square => Self::Square(Square::quad(origin, size)),
+            Shape::Sphere => Self::Sphere(Spherical::sphere(origin, size)),
         }
     }
 
@@ -128,6 +132,17 @@ impl Geometric for Cube {
 
 impl Geometric for Square {
     fn new(origin: Position, size: f32) -> Self { Self::quad(origin, size) }
+    fn mesh(&self) -> &Mesh { &self.mesh }
+    fn vertices(&self) -> &Vec<Vertex> { &self.mesh.vertices }
+    fn indices(&self) -> &Vec<u16> { &self.mesh.indices }
+    fn vertex_len(&self) -> usize { self.mesh.vertices.len() }
+    fn index_len(&self) -> usize { self.mesh.indices.len() }
+    fn rotate(&mut self, angle: f32, axis: Position) { self.mesh.rotate(axis, self.origin, angle); }
+    fn dedup(&mut self) { self.mesh.dedup(); }
+}
+
+impl Geometric for Spherical {
+    fn new(origin: Position, size: f32) -> Self { Self::sphere(origin, size) }
     fn mesh(&self) -> &Mesh { &self.mesh }
     fn vertices(&self) -> &Vec<Vertex> { &self.mesh.vertices }
     fn indices(&self) -> &Vec<u16> { &self.mesh.indices }
