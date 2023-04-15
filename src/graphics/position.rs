@@ -33,7 +33,7 @@ impl Position {
     }
 
     pub fn sqrt(self) -> f32 {
-        (self.x * self.x + self.y * self.y).sqrt()
+        (self.x * self.x + self.y * self.y + self.z * self.z).sqrt()
     }
 
     // noramlize a position
