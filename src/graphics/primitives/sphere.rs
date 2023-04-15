@@ -215,16 +215,16 @@ impl Spherical {
                         normal: (0.0, 0.0, 1.0).into(),
                     });
 
+                    let index = (s * subdivisions * subdivisions) + (i * subdivisions) + j;
                     // determine index of vertex
                     if i < subdivisions - 1 && j < subdivisions - 1 {
-                        let index = (s * subdivisions * subdivisions) + (i * subdivisions) + j;
                         indices.extend_from_slice(&[
                             index,
                             index + subdivisions + 1,
                             index + 1,
                             index + 1,
                             index + subdivisions + 1,
-                            index + subdivisions ,
+                            index + subdivisions,
                         ])
                     }
                 }
