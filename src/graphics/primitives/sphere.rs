@@ -50,7 +50,7 @@ impl Spherical {
         let longitude = (2.0 * std::f32::consts::PI * j as f32) / sectors as f32;
     
         let angle = (longitude - latitude).abs() * 2.0;
-        let frequency = 6.0; // You can adjust the frequency to control the number of spirals
+        let frequency = 4.0; // You can adjust the frequency to control the number of spirals
     
         let t = (i as f32 / stacks as f32 + angle * frequency) % (2.0 * std::f32::consts::PI);
     
@@ -65,8 +65,8 @@ impl Spherical {
         // generate vertices
         let mut vertices: Vec<Vertex> = Vec::new();
         let mut indices: Vec<u16> = Vec::new();
-        let sectors = 32;
-        let stacks = 32;
+        let sectors = 255;
+        let stacks = 255;
 
         let sector_step = 2.0 * std::f32::consts::PI / sectors as f32;
         let stack_step = std::f32::consts::PI / stacks as f32;
