@@ -45,7 +45,7 @@ impl Spherical {
         }
     }
 
-    fn calculate_spiral_color(i: u16, j: u16, stacks: u16, sectors: u16) -> Color{
+    fn uv_spiral_color(i: u16, j: u16, stacks: u16, sectors: u16) -> Color{
         let latitude = (std::f32::consts::PI * i as f32) / stacks as f32;
         let longitude = (2.0 * std::f32::consts::PI * j as f32) / sectors as f32;
     
@@ -85,7 +85,7 @@ impl Spherical {
 
                 vertices.push(Vertex {
                     position: Position::new(origin.x + x, origin.y + y, origin.z + z, 1.0),
-                    color: Self::calculate_spiral_color(i, j, stacks, sectors),
+                    color: Self::uv_spiral_color(i, j, stacks, sectors),
                     normal: (0.0, 0.0, 1.0).into(),
                 });
             }
@@ -163,7 +163,11 @@ impl Spherical {
                     z: verts[i * 3 + 2] * radius + origin.z,
                     w: 1.0,
                 },
-                color: Color::blue(),
+                color: Color::new(
+                    i as f32 / 12.0,
+                    1.0 - (i as f32 / 12.0), 
+                    2.0 - (i as f32 / 6.0) / 2.0, 
+                    1.0),
                 normal: (0.0, 0.0, 1.0).into(),
             });
         }
