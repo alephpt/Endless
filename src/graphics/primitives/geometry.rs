@@ -4,7 +4,9 @@ pub enum Shape {
     Triangle,
     Square,
     Cube,
-    Sphere,
+    UVSphere,
+    Icosahedron,
+    SpherifiedCube,
 }
 
 #[derive(Debug, Clone)]
@@ -12,7 +14,7 @@ pub enum Geometry {
     Triangle(Triangle),
     Cube(Cube),
     Square(Square),
-    Sphere(Spherical)
+    Sphere(Spherical),
 }
 
 impl Geometry {
@@ -21,7 +23,9 @@ impl Geometry {
             Shape::Triangle => Self::Triangle(Triangle::triangle(origin, size)),
             Shape::Cube => Self::Cube(Cube::cube(origin, size)),
             Shape::Square => Self::Square(Square::quad(origin, size)),
-            Shape::Sphere => Self::Sphere(Spherical::sphere(size, origin, Sphere::UVSphere)),
+            Shape::UVSphere => Self::Sphere(Spherical::sphere(size, origin, Sphere::UVSphere)),
+            Shape::Icosahedron => Self::Sphere(Spherical::sphere(size, origin, Sphere::Icosahedron)),
+            Shape::SpherifiedCube => Self::Sphere(Spherical::sphere(size, origin, Sphere::SpherifiedCube)),
         }
     }
 
