@@ -65,8 +65,8 @@ impl Spherical {
         // generate vertices
         let mut vertices: Vec<Vertex> = Vec::new();
         let mut indices: Vec<u16> = Vec::new();
-        let sectors = 6;
-        let stacks = 3;
+        let sectors = 144;
+        let stacks = 72;
 
         let sector_step = 2.0 * std::f32::consts::PI / sectors as f32;
         let stack_step = std::f32::consts::PI / stacks as f32;
@@ -197,7 +197,7 @@ impl Spherical {
                 1.0)
         }
 
-        let subdivisions = 3;
+        let subdivisions = 12;
 
         for s in 0..6{
             for i in 0..subdivisions{

@@ -5,7 +5,7 @@ fn main() {
         let size = 1.0;
         let mut quad = Square::new(origin, size);
 
-        quad.subdivide(2);
+        quad.subdivide(6);
         quad.dedup();
 
         let _ = pollster::block_on(run(quad));

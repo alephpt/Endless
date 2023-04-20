@@ -38,25 +38,25 @@ impl Square {
 
         let v1 = Vertex::new(
             Position::new(x - offset, y + offset, z, 1.0), 
-            Color::black(), 
+            Color::cyan(), 
             Normal::new(0.0, 0.0, 1.0),
         );
 
         let v2 = Vertex::new(
             Position::new(x - offset, y - offset, 0.0, 1.0), 
-            Color::cyan(), 
+            Color::black(), 
             Normal::new(0.0, 0.0, 1.0),
         );
 
         let v3 = Vertex::new(
             Position::new(x + offset, y + offset, 0.0, 1.0), 
-            Color::yellow(), 
+            Color::magenta(), 
             Normal::new(0.0, 0.0, 1.0)
         );
 
         let v4 = Vertex::new(
             Position::new(x + offset, y - offset, 0.0, 1.0), 
-            Color::magenta(), 
+            Color::yellow(), 
             Normal::new(0.0, 0.0, 1.0)
         );
 
